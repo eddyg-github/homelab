@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":30069,"protocol":"TCP","serviceName":"media:prowlarr","allNodes":true}]'
   name: prowlarr
   namespace: media
 spec:
@@ -37,6 +35,13 @@ spec:
         volumeMounts:
         - mountPath: /config
           name: config
+        env:
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: TZ
+          value: America/Argentina/Buenos_Aires
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -46,4 +51,3 @@ spec:
       - name: config
         persistentVolumeClaim:
           claimName: prowlarr-config
-

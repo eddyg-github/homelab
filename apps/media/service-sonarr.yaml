@@ -1,8 +1,6 @@
 apiVersion: v1
 kind: Service
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":30089,"protocol":"TCP","serviceName":"media:sonarr","allNodes":true}]'
   name: sonarr
   namespace: media
 spec:

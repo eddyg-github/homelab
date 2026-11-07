@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":30078,"protocol":"TCP","serviceName":"media:radarr","allNodes":true}]'
   name: radarr
   namespace: media
 spec:
@@ -39,6 +37,13 @@ spec:
           name: media
         - mountPath: /config
           name: config
+        env:
+        - name: PUID
+          value: '1000'
+        - name: PGID
+          value: '1000'
+        - name: TZ
+          value: America/Argentina/Buenos_Aires
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler

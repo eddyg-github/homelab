@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":30007,"protocol":"TCP","serviceName":"default:filebrowser","allNodes":true}]'
   name: filebrowser
   namespace: default
 spec:
@@ -81,4 +79,3 @@ spec:
           path: /opt/filebrowser
           type: ''
         name: db
-

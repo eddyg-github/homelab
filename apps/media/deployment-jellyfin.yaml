@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"media:jellyfin","ingressName":"media:jellyfin","hostname":"jellyfin.lyxar.dedyn.io","path":"/","allNodes":false}]'
   labels:
     app: jellyfin
     app.kubernetes.io/component: media-server
@@ -102,4 +100,3 @@ spec:
       - name: cache
         persistentVolumeClaim:
           claimName: jellyfin-cache-pvc
-

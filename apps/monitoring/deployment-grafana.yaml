@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":30030,"protocol":"TCP","serviceName":"monitoring:grafana","allNodes":true},{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"monitoring:grafana","ingressName":"monitoring:grafana","hostname":"grafana.lyxar.dedyn.io","path":"/","allNodes":false}]'
   name: grafana
   namespace: monitoring
 spec:
@@ -88,4 +86,3 @@ spec:
           defaultMode: 420
           name: grafana-dashboards
         name: dashboards
-

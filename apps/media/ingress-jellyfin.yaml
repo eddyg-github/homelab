@@ -3,7 +3,6 @@ kind: Ingress
 metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
-    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"media:jellyfin","ingressName":"media:jellyfin","hostname":"jellyfin.lyxar.dedyn.io","path":"/","allNodes":false}]'
   name: jellyfin
   namespace: media
 spec:
@@ -23,4 +22,3 @@ spec:
   - hosts:
     - jellyfin.lyxar.dedyn.io
     secretName: jellyfin-tls
-

@@ -1,8 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    field.cattle.io/publicEndpoints: '[{"port":32000,"protocol":"TCP","serviceName":"minio:minio","allNodes":true},{"port":32001,"protocol":"TCP","serviceName":"minio:minio","allNodes":true}]'
   name: minio
   namespace: minio
 spec:
@@ -67,4 +65,3 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: minio-data
-
