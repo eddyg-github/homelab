@@ -1,0 +1,26 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: kube-system
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: http-to-https
+  namespace: kube-system
+spec:
+  entryPoints: [web]
+  routes:
+    - match: HostRegexp(`^.+\.lyxar\.dedyn\.io$`)
+      kind: Rule
+      priority: 1
+      middlewares:
+        - name: redirect-https
+      services:
+        - name: noop@internal
+          kind: TraefikService
