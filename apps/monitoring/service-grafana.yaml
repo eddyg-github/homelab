@@ -6,7 +6,6 @@ metadata:
   name: grafana
   namespace: monitoring
 spec:
-  externalTrafficPolicy: Cluster
   ports:
   - name: http
     port: 3000

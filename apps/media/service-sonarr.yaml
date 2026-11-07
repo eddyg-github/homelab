@@ -6,7 +6,6 @@ metadata:
   name: sonarr
   namespace: media
 spec:
-  externalTrafficPolicy: Cluster
   ports:
   - port: 8989
     protocol: TCP

@@ -6,7 +6,6 @@ metadata:
   name: minio
   namespace: minio
 spec:
-  externalTrafficPolicy: Cluster
   ports:
   - name: api
     port: 9000

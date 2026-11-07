@@ -6,7 +6,6 @@ metadata:
   name: qbittorrent
   namespace: media
 spec:
-  externalTrafficPolicy: Cluster
   ports:
   - port: 8080
     protocol: TCP
