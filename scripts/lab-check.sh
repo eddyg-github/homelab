@@ -31,13 +31,14 @@ fi
 sec "HTTPS por Ingress (vía Traefik local)"
 IP=$(kubectl -n kube-system get svc traefik -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 for h in $(kubectl get ingress -A -o jsonpath='{range .items[*]}{range .spec.rules[*]}{.host}{"\n"}{end}{end}' | sort -u); do
+  [ -n "$(dig +short "$h" | head -1)" ] || { bad "$h no resuelve en DNS"; continue; }
   r=$(curl -sS -o /dev/null -m 10 --resolve "$h:443:$IP" -w '%{http_code} %{ssl_verify_result}' "https://$h" 2>&1)
   case "$r" in [234]??" 0") ok "$h -> ${r% *} cert válido";; *) bad "$h -> $r";; esac
 done
 
 sec "Disco"
-U=$(df --output=pcent /var/lib/rancher | tail -1 | tr -dc 0-9)
-[ "$U" -lt 85 ] && ok "uso de disco ${U}%" || bad "disco al ${U}%"
+FREE=$(df -BG --output=avail /var/lib/rancher | tail -1 | tr -dc 0-9)
+[ "$FREE" -ge 20 ] && ok "disco: ${FREE}G libres" || bad "quedan solo ${FREE}G libres"
 
 echo; [ $FAIL -eq 0 ] && echo "🟢 LAB OK" || echo "🔴 HAY PROBLEMAS"
 exit $FAIL
