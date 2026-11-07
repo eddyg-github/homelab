@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - git:
+        repoURL: git@github.com:eddyg-github/homelab.git
+        revision: main
+        directories:
+          - path: platform/*
+  template:
+    metadata:
+      name: 'platform-{{.path.basename}}'
+    spec:
+      project: default
+      source:
+        repoURL: git@github.com:eddyg-github/homelab.git
+        targetRevision: main
+        path: '{{.path.path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd   # los manifiestos deben traer su propio namespace
+      syncPolicy:
+        automated: { prune: false, selfHeal: true }
+        syncOptions: [ServerSideApply=true]

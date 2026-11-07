@@ -1,0 +1,6 @@
+SECRETS*
+*.key
+*.pem
+*.tfstate*
+.terraform/
+homelab-backup/
