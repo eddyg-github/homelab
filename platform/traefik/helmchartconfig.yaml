@@ -4,11 +4,7 @@ metadata:
   name: traefik
   namespace: kube-system
 spec:
-  valuesContent: |-
-    service:
-      spec:
-        externalTrafficPolicy: Local
-    logs:
-      access:
-        enabled: true
-        format: json
+  valuesContent: "service:\n  spec:\n    externalTrafficPolicy: Local\nlogs:\n  access:\n\
+    \    enabled: true\n    format: json\nports:\n  web:\n    redirections:\n    \
+    \  entryPoint:\n        to: websecure\n        scheme: https\n        permanent:\
+    \ true\n"
