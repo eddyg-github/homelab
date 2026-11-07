@@ -5,19 +5,22 @@ metadata:
   namespace: argocd
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.middlewares: argocd-lan-only@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
 spec:
   ingressClassName: traefik
   tls:
-    - hosts: [argocd.lyxar.dedyn.io]
-      secretName: argocd-tls
+  - hosts:
+    - argocd.lyxar.dedyn.io
+    secretName: argocd-tls
   rules:
-    - host: argocd.lyxar.dedyn.io
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: argocd-server
-                port:
-                  number: 80
+  - host: argocd.lyxar.dedyn.io
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 80

@@ -8,11 +8,9 @@ metadata:
 spec:
   externalTrafficPolicy: Cluster
   ports:
-  - nodePort: 30007
-    port: 8080
+  - port: 8080
     protocol: TCP
     targetPort: 8080
   selector:
     app: filebrowser
-  type: NodePort
-
+  type: ClusterIP

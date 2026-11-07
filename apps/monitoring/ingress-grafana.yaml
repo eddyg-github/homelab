@@ -4,6 +4,8 @@ metadata:
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt
     field.cattle.io/publicEndpoints: '[{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"monitoring:grafana","ingressName":"monitoring:grafana","hostname":"grafana.lyxar.dedyn.io","path":"/","allNodes":false}]'
+    traefik.ingress.kubernetes.io/router.middlewares: monitoring-lan-only@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
   name: grafana
   namespace: monitoring
 spec:
@@ -23,4 +25,3 @@ spec:
   - hosts:
     - grafana.lyxar.dedyn.io
     secretName: grafana-tls
-
