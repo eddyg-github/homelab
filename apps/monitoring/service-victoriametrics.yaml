@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: victoriametrics
+  namespace: monitoring
+spec:
+  ports:
+  - name: http
+    port: 8428
+    protocol: TCP
+    targetPort: 8428
+  selector:
+    app: victoriametrics
+  type: ClusterIP
+

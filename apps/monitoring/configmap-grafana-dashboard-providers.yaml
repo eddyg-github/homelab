@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  providers.yaml: "apiVersion: 1\nproviders:\n  - name: default\n    folder: Cluster\n\
+    \    type: file\n    options:\n      path: /var/lib/grafana/dashboards\n"
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+  namespace: monitoring
+

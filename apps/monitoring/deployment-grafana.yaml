@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    field.cattle.io/publicEndpoints: '[{"port":30030,"protocol":"TCP","serviceName":"monitoring:grafana","allNodes":true},{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"monitoring:grafana","ingressName":"monitoring:grafana","hostname":"grafana.lyxar.dedyn.io","path":"/","allNodes":false}]'
+  name: grafana
+  namespace: monitoring
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: grafana
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - env:
+        - name: GF_SECURITY_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              key: GF_SECURITY_ADMIN_USER
+              name: grafana-env
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: GF_SECURITY_ADMIN_PASSWORD
+              name: grafana-env
+        - name: GF_PATHS_PROVISIONING
+          value: /etc/grafana/provisioning
+        - name: GF_USERS_ALLOW_SIGN_UP
+          value: 'false'
+        image: grafana/grafana:10.4.2
+        imagePullPolicy: IfNotPresent
+        name: grafana
+        ports:
+        - containerPort: 3000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 6
+          httpGet:
+            path: /api/health
+            port: 3000
+            scheme: HTTP
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/grafana/provisioning/datasources
+          name: datasources
+        - mountPath: /etc/grafana/provisioning/dashboards
+          name: dashboard-providers
+        - mountPath: /var/lib/grafana/dashboards
+          name: dashboards
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: grafana-datasources
+        name: datasources
+      - configMap:
+          defaultMode: 420
+          name: grafana-dashboard-providers
+        name: dashboard-providers
+      - configMap:
+          defaultMode: 420
+          name: grafana-dashboards
+        name: dashboards
+

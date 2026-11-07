@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"media:jellyfin","ingressName":"media:jellyfin","hostname":"jellyfin.lyxar.dedyn.io","path":"/","allNodes":false}]'
+  name: jellyfin
+  namespace: media
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: jellyfin.lyxar.dedyn.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: jellyfin
+            port:
+              number: 8096
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - jellyfin.lyxar.dedyn.io
+    secretName: jellyfin-tls
+

@@ -1,0 +1,47 @@
+apiVersion: v1
+data:
+  config.yaml: "extensions:\n  health_check:\n    endpoint: \"0.0.0.0:13133\"\n\n\
+    receivers:\n  otlp:\n    protocols:\n      grpc:\n        endpoint: \"0.0.0.0:4317\"\
+    \n      http:\n        endpoint: \"0.0.0.0:4318\"\n\n  prometheus:\n    config:\n\
+    \      scrape_configs:\n\n        - job_name: kube-state-metrics\n          static_configs:\n\
+    \            - targets:\n                - kube-state-metrics.kube-system.svc.cluster.local:8080\n\
+    \n        - job_name: coredns\n          static_configs:\n            - targets:\n\
+    \                - kube-dns.kube-system.svc.cluster.local:9153\n\n        - job_name:\
+    \ cert-manager\n          static_configs:\n            - targets:\n          \
+    \      - cert-manager.cert-manager.svc.cluster.local:9402\n\n        - job_name:\
+    \ argocd\n          static_configs:\n            - targets:\n                -\
+    \ argocd-metrics.argocd.svc.cluster.local:8082\n                - argocd-server-metrics.argocd.svc.cluster.local:8083\n\
+    \n        - job_name: traefik\n          kubernetes_sd_configs:\n            -\
+    \ role: pod\n              namespaces:\n                names:\n             \
+    \     - kube-system\n\n          relabel_configs:\n            - source_labels:\
+    \ [__meta_kubernetes_pod_label_app_kubernetes_io_name]\n              action:\
+    \ keep\n              regex: traefik\n\n            - source_labels: [__meta_kubernetes_pod_ip]\n\
+    \              target_label: __address__\n              replacement: $1:9100\n\
+    \n        - job_name: kubernetes-pods\n          kubernetes_sd_configs:\n    \
+    \        - role: pod\n\n          relabel_configs:\n            - source_labels:\n\
+    \                - __meta_kubernetes_pod_annotation_prometheus_io_scrape\n   \
+    \           action: keep\n              regex: true\n\n            - source_labels:\n\
+    \                - __meta_kubernetes_pod_annotation_prometheus_io_port\n     \
+    \         action: keep\n              regex: ([0-9]+)\n\n            - source_labels:\n\
+    \                - __address__\n                - __meta_kubernetes_pod_annotation_prometheus_io_port\n\
+    \              action: replace\n              regex: ([^:]+)(?::\\d+)?;([0-9]+)\n\
+    \              replacement: $1:$2\n              target_label: __address__\n\n\
+    \            - action: labelmap\n              regex: __meta_kubernetes_pod_label_(.+)\n\
+    \n            - source_labels:\n                - __meta_kubernetes_namespace\n\
+    \              target_label: namespace\n\n            - source_labels:\n     \
+    \           - __meta_kubernetes_pod_name\n              target_label: pod\n\n\
+    processors:\n  memory_limiter:\n    check_interval: 5s\n    limit_mib: 384\n \
+    \   spike_limit_mib: 128\n\n  batch:\n    timeout: 5s\n    send_batch_size: 1000\n\
+    \nexporters:\n  prometheusremotewrite:\n    endpoint: \"http://victoriametrics.monitoring.svc.cluster.local:8428/api/v1/write\"\
+    \n\n  debug:\n    verbosity: basic\n\nservice:\n  extensions:\n    - health_check\n\
+    \n  pipelines:\n    metrics:\n      receivers:\n        - otlp\n        - prometheus\n\
+    \      processors:\n        - memory_limiter\n        - batch\n      exporters:\n\
+    \        - prometheusremotewrite\n\n    traces:\n      receivers:\n        - otlp\n\
+    \      processors:\n        - memory_limiter\n        - batch\n      exporters:\n\
+    \        - debug\n\n    logs:\n      receivers:\n        - otlp\n      processors:\n\
+    \        - memory_limiter\n        - batch\n      exporters:\n        - debug"
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: monitoring
+

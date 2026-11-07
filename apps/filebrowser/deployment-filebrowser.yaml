@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    field.cattle.io/publicEndpoints: '[{"port":30007,"protocol":"TCP","serviceName":"default:filebrowser","allNodes":true}]'
+  name: filebrowser
+  namespace: default
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: filebrowser
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: filebrowser
+    spec:
+      containers:
+      - args:
+        - --address
+        - 0.0.0.0
+        - --port
+        - '8080'
+        - --root
+        - /srv
+        - --database
+        - /database/filebrowser.db
+        image: filebrowser/filebrowser:latest
+        imagePullPolicy: Always
+        name: filebrowser
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          runAsUser: 0
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /srv
+          name: root
+        - mountPath: /database
+          name: db
+      dnsPolicy: ClusterFirst
+      initContainers:
+      - command:
+        - sh
+        - -c
+        - "if [ ! -f /database/filebrowser.db ]; then\n  echo \"Initializing DB...\"\
+          \n  filebrowser config init --database /database/filebrowser.db\n  filebrowser\
+          \ users add admin admin12345678 --perm.admin --database /database/filebrowser.db\n\
+          else\n  echo \"DB already exists, skipping init\"\nfi\n"
+        image: filebrowser/filebrowser:latest
+        imagePullPolicy: Always
+        name: init-filebrowser
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /database
+          name: db
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /mnt/unified-media
+          type: ''
+        name: root
+      - hostPath:
+          path: /opt/filebrowser
+          type: ''
+        name: db
+

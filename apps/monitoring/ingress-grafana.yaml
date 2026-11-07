@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.1.47"],"port":443,"protocol":"HTTPS","serviceName":"monitoring:grafana","ingressName":"monitoring:grafana","hostname":"grafana.lyxar.dedyn.io","path":"/","allNodes":false}]'
+  name: grafana
+  namespace: monitoring
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: grafana.lyxar.dedyn.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - grafana.lyxar.dedyn.io
+    secretName: grafana-tls
+
