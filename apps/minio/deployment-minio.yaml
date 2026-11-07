@@ -63,5 +63,6 @@ spec:
       terminationGracePeriodSeconds: 30
       volumes:
       - name: data
-        persistentVolumeClaim:
-          claimName: minio-data
+        hostPath:
+          path: /mnt/media4/minio-data
+          type: DirectoryOrCreate
