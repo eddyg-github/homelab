@@ -4,3 +4,4 @@ SECRETS*
 *.tfstate*
 .terraform/
 homelab-backup/
+*master-key*

@@ -55,7 +55,7 @@ spec:
         - -c
         - "if [ ! -f /database/filebrowser.db ]; then\n  echo \"Initializing DB...\"\
           \n  filebrowser config init --database /database/filebrowser.db\n  filebrowser\
-          \ users add admin admin12345678 --perm.admin --database /database/filebrowser.db\n\
+          \ users add admin \"$FB_ADMIN_PASSWORD\" --perm.admin --database /database/filebrowser.db\n\
           else\n  echo \"DB already exists, skipping init\"\nfi\n"
         image: filebrowser/filebrowser:latest
         imagePullPolicy: Always
@@ -66,6 +66,12 @@ spec:
         volumeMounts:
         - mountPath: /database
           name: db
+        env:
+        - name: FB_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: filebrowser-env
+              key: FB_ADMIN_PASSWORD
       restartPolicy: Always
       schedulerName: default-scheduler
       securityContext: {}
