@@ -28,6 +28,7 @@ spec:
         - --web.listen-address=:9101
         - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+|var/lib/rancher/k3s/(agent|storage)/.+|mnt/unified-source/.+)($|/)
         - --collector.netdev.device-exclude=^(veth.*|cni0|flannel.*|lo)$
+        - --collector.textfile.directory=/host/root/var/lib/node_exporter/textfile
         ports:
         - containerPort: 9101
           name: metrics
