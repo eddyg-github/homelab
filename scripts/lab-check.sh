@@ -40,5 +40,11 @@ sec "Disco"
 FREE=$(df -BG --output=avail /var/lib/rancher | tail -1 | tr -dc 0-9)
 [ "$FREE" -ge 20 ] && ok "disco: ${FREE}G libres" || bad "quedan solo ${FREE}G libres"
 
+sec "Backups (Velero)"
+if kubectl get crd backups.velero.io >/dev/null 2>&1; then
+  L=$(kubectl -n velero get backups -o json | jq -r '[.items[]|select(.status.phase=="Completed")|.status.completionTimestamp]|max // empty')
+  if [ -z "$L" ]; then bad "ningún backup completado"; else AGE=$(( ($(date +%s)-$(date -d "$L" +%s))/3600 )); [ "$AGE" -lt 36 ] && ok "último backup hace ${AGE}h" || bad "último backup hace ${AGE}h (más de 36h)"; fi
+fi
+
 echo; [ $FAIL -eq 0 ] && echo "🟢 LAB OK" || echo "🔴 HAY PROBLEMAS"
 exit $FAIL
