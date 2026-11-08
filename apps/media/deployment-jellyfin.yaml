@@ -21,7 +21,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations: {}
+      annotations:
+        backup.velero.io/backup-volumes: jellyfin-config
       labels:
         app: jellyfin
         app.kubernetes.io/component: media-server

@@ -42,10 +42,10 @@ PY
 fi
 ls -d "$DISK/minio-data" >/dev/null 2>&1 && ok "$DISK/minio-data existe" || bad "no veo $DISK/minio-data"
 
-echo "== 2) Bucket 'velero' y usuario con permisos acotados =="
-VPASS=$(rand)
-kubectl -n minio delete job velero-setup --ignore-not-found >/dev/null
-kubectl -n minio create secret generic velero-setup --from-literal=VELERO_PASSWORD="$VPASS" --dry-run=client -o yaml | kubectl apply -f - >/dev/null
+echo "== 2) Bucket 'velero' (API S3 con curl, sin mc) =="
+VUSER=$(kubectl -n minio get secret minio-env -o jsonpath='{.data.MINIO_ROOT_USER}' | base64 -d)
+VPASS=$(kubectl -n minio get secret minio-env -o jsonpath='{.data.MINIO_ROOT_PASSWORD}' | base64 -d)
+kubectl -n minio delete job velero-setup --ignore-not-found --force --grace-period=0 >/dev/null 2>&1
 kubectl apply -f - >/dev/null <<'YAML'
 apiVersion: batch/v1
 kind: Job
@@ -56,37 +56,28 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: mc
-          image: minio/mc:RELEASE.2022-10-29T10-09-23Z
+        - name: c
+          image: curlimages/curl:8.6.0
           command: ["/bin/sh","-c"]
           env:
-            - {name: MINIO_ROOT_USER, valueFrom: {secretKeyRef: {name: minio-env, key: MINIO_ROOT_USER}}}
-            - {name: MINIO_ROOT_PASSWORD, valueFrom: {secretKeyRef: {name: minio-env, key: MINIO_ROOT_PASSWORD}}}
-            - {name: VELERO_PASSWORD, valueFrom: {secretKeyRef: {name: velero-setup, key: VELERO_PASSWORD}}}
+            - {name: U, valueFrom: {secretKeyRef: {name: minio-env, key: MINIO_ROOT_USER}}}
+            - {name: P, valueFrom: {secretKeyRef: {name: minio-env, key: MINIO_ROOT_PASSWORD}}}
           args:
             - |
-              set -e
-              mc alias set m http://minio.minio.svc.cluster.local:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD" >/dev/null
-              mc mb --ignore-existing m/velero
-              cat > /tmp/p.json <<'J'
-              {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["s3:*"],"Resource":["arn:aws:s3:::velero","arn:aws:s3:::velero/*"]}]}
-              J
-              mc admin policy add m velero-rw /tmp/p.json || mc admin policy create m velero-rw /tmp/p.json
-              mc admin user add m velero "$VELERO_PASSWORD"
-              mc admin policy set m velero-rw user=velero || mc admin policy attach m velero-rw --user velero
-              echo "--- buckets:"; mc ls m
-              echo "--- usuarios:"; mc admin user list m
+              URL=http://minio.minio.svc.cluster.local:9000/velero
+              curl -s -o /dev/null --aws-sigv4 "aws:amz:us-east-1:s3" --user "$U:$P" -X PUT "$URL"
+              C=$(curl -s -o /dev/null -w '%{http_code}' --aws-sigv4 "aws:amz:us-east-1:s3" --user "$U:$P" -I "$URL")
+              echo "HEAD bucket velero: $C"
+              [ "$C" = 200 ]
 YAML
 for i in $(seq 1 60); do
   S=$(kubectl -n minio get job velero-setup -o jsonpath='{.status.succeeded}' 2>/dev/null); F=$(kubectl -n minio get job velero-setup -o jsonpath='{.status.failed}' 2>/dev/null)
   [ "${S:-0}" = 1 ] && break; [ "${F:-0}" -ge 1 ] && break; sleep 5
 done
-echo "--- salida del Job:"; kubectl -n minio logs job/velero-setup 2>&1 | grep -v -i password | tail -12
+kubectl -n minio logs job/velero-setup 2>&1 | tail -5
 S=$(kubectl -n minio get job velero-setup -o jsonpath='{.status.succeeded}' 2>/dev/null)
-kubectl -n minio delete job velero-setup --ignore-not-found >/dev/null; kubectl -n minio delete secret velero-setup --ignore-not-found >/dev/null
-[ "${S:-0}" = 1 ] && ok "bucket y usuario creados" || { bad "el Job falló (ver salida arriba)"; exit 1; }
-( umask 077; printf 'Velero (MinIO)  usuario: velero  contraseña: %s  bucket: velero\n' "$VPASS" >> $BK/new-credentials.txt )
-ok "contraseña guardada en $BK/new-credentials.txt"
+kubectl -n minio delete job velero-setup --ignore-not-found >/dev/null 2>&1
+[ "${S:-0}" = 1 ] && ok "bucket velero creado y verificado" || { bad "no pude crear el bucket (ver salida arriba)"; exit 1; }
 
 echo "== 3) Velero: CLI y manifiestos =="
 VT=$(latest vmware-tanzu/velero); PT=$(latest vmware-tanzu/velero-plugin-for-aws)
@@ -97,7 +88,7 @@ if ! velero version --client-only 2>/dev/null | grep -q "${VT#v}"; then
    && tar xzf /tmp/velero.tgz -C /tmp "velero-$VT-linux-amd64/velero" && sudo install -m 755 "/tmp/velero-$VT-linux-amd64/velero" /usr/local/bin/velero \
    && rm -rf "/tmp/velero-$VT-linux-amd64" && ok "CLI instalado" || { bad "no pude instalar el CLI de Velero"; exit 1; }
 else ok "CLI ya está en $VT"; fi
-( umask 077; printf '[default]\naws_access_key_id=velero\naws_secret_access_key=%s\n' "$VPASS" > /tmp/velero-creds )
+( umask 077; printf '[default]\naws_access_key_id=%s\naws_secret_access_key=%s\n' "$VUSER" "$VPASS" > /tmp/velero-creds )
 velero install --namespace velero --provider aws --plugins "velero/velero-plugin-for-aws:$PT" --bucket velero \
   --secret-file /tmp/velero-creds --use-volume-snapshots=false --use-node-agent \
   --backup-location-config region=minio,s3ForcePathStyle=true,s3Url=http://minio.minio.svc.cluster.local:9000 \
