@@ -13,7 +13,7 @@ spec:
       labels:
         app: vmagent
       annotations:
-        checksum/config: e32c789f32b1
+        checksum/config: e95e75b421b5
     spec:
       serviceAccountName: vmagent
       containers:

@@ -17,7 +17,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations: {}
+      annotations:
+        checksum/config: c4afb21ff8eb
       labels:
         app: otel-collector
     spec:
@@ -81,4 +82,3 @@ spec:
           defaultMode: 420
           name: otel-collector-config
         name: config
-
