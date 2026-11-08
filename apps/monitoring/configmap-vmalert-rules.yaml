@@ -313,6 +313,20 @@ data:
           severity: warning
         annotations:
           summary: 'Memoria: procesos detenidos por falta de RAM el {{ $value | humanizePercentage }} del tiempo'
+      - alert: UpdnFailed
+        expr: lab_updn_last_run_ok == 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: 'La actualizacion automatica (updn) fallo. Ver: sudo tail -50 /var/log/updn.log'
+      - alert: UpdnStale
+        expr: time() - lab_updn_last_success_timestamp_seconds > 3 * 86400
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: Hace mas de 3 dias que updn no termina con exito
 kind: ConfigMap
 metadata:
   name: vmalert-rules

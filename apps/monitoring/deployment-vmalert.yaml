@@ -20,7 +20,7 @@ spec:
       labels:
         app: vmalert
       annotations:
-        checksum/rules: ee605701b88f
+        checksum/rules: 6f8701dc759a
     spec:
       containers:
       - args:
