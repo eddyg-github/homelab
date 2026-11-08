@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: node-exporter
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: node-exporter
+  template:
+    metadata:
+      labels:
+        app: node-exporter
+    spec:
+      hostNetwork: true
+      hostPID: true
+      dnsPolicy: ClusterFirstWithHostNet
+      tolerations:
+      - operator: Exists
+      securityContext:
+        runAsUser: 65534
+        runAsNonRoot: true
+      containers:
+      - name: node-exporter
+        image: prom/node-exporter:v1.8.2
+        args:
+        - --path.rootfs=/host/root
+        - --web.listen-address=:9101
+        - --collector.filesystem.mount-points-exclude=^/(dev|proc|sys|run|var/lib/docker/.+|var/lib/kubelet/.+|var/lib/rancher/k3s/(agent|storage)/.+|mnt/unified-source/.+)($|/)
+        - --collector.netdev.device-exclude=^(veth.*|cni0|flannel.*|lo)$
+        ports:
+        - containerPort: 9101
+          name: metrics
+        resources:
+          requests:
+            cpu: 30m
+            memory: 48Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: root
+          mountPath: /host/root
+          readOnly: true
+          mountPropagation: HostToContainer
+      volumes:
+      - name: root
+        hostPath:
+          path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-exporter
+  namespace: monitoring
+spec:
+  selector:
+    app: node-exporter
+  ports:
+  - name: http
+    port: 9101
+    targetPort: 9101

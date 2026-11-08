@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: vmalert
+      annotations:
+        checksum/rules: 5cf55b12ea26
     spec:
       containers:
       - args:
@@ -26,7 +28,7 @@ spec:
         - -remoteWrite.url=http://victoriametrics.monitoring.svc.cluster.local:8428
         - -rule=/rules/rules.yaml
         - -evaluationInterval=60s
-        - -notifier.blackhole=true
+        - -notifier.url=http://alertmanager.monitoring.svc.cluster.local:9093
         image: victoriametrics/vmalert:v1.93.4
         imagePullPolicy: IfNotPresent
         name: vmalert
@@ -55,4 +57,3 @@ spec:
           defaultMode: 420
           name: vmalert-rules
         name: rules
-

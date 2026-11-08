@@ -1,19 +1,45 @@
 apiVersion: v1
 data:
-  rules.yaml: "groups:\n  - name: cluster-health\n    interval: 60s\n    rules:\n\
-    \      - alert: PodCrashLooping\n        expr: rate(kube_pod_container_status_restarts_total[5m])\
-    \ > 0\n        for: 2m\n        labels:\n          severity: warning\n       \
-    \ annotations:\n          summary: \"Pod {{ $labels.pod }} reiniciando en {{ $labels.namespace\
-    \ }}\"\n      - alert: PodNotRunning\n        expr: kube_pod_status_phase{phase!=\"\
-    Running\",phase!=\"Succeeded\"} == 1\n        for: 5m\n        labels:\n     \
-    \     severity: critical\n        annotations:\n          summary: \"Pod {{ $labels.pod\
-    \ }} en estado {{ $labels.phase }}\"\n      - alert: HighMemoryUsage\n       \
-    \ expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes\
-    \ > 0.90\n        for: 5m\n        labels:\n          severity: warning\n    \
-    \    annotations:\n          summary: \"Memoria al {{ $value | humanizePercentage\
-    \ }}\"\n"
+  rules.yaml: "groups:\n  - name: servidor\n    interval: 60s\n    rules:\n      - alert: NodeExporterDown\n        expr: up{job=\"node-exporter\"} == 0\n        for: 2m\n        labels: {severity: critical}\n\
+    \        annotations:\n          summary: \"node-exporter no responde: no hay m\xE9tricas del servidor\"\n      - alert: HighMemoryUsage\n        expr: 1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes\
+    \ > 0.90\n        for: 5m\n        labels: {severity: warning}\n        annotations:\n          summary: \"Memoria del servidor al {{ $value | humanizePercentage }}\"\n      - alert: HighCPU\n     \
+    \   expr: 1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) > 0.90\n        for: 10m\n        labels: {severity: warning}\n        annotations:\n          summary: \"CPU del servidor al {{ $value\
+    \ | humanizePercentage }} durante 10 min\"\n      - alert: HighIOWait\n        expr: avg(rate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) > 0.20\n        for: 10m\n        labels: {severity: warning}\n\
+    \        annotations:\n          summary: \"Los discos est\xE1n frenando al CPU (iowait {{ $value | humanizePercentage }}): Jellyfin puede cortarse\"\n      - alert: DiskBusy\n        expr: rate(node_disk_io_time_seconds_total{device=~\"\
+    sd[a-d]\"}[5m]) > 0.90\n        for: 15m\n        labels: {severity: warning}\n        annotations:\n          summary: \"Disco {{ $labels.device }} saturado ({{ $value | humanizePercentage }} ocupado)\"\
+    \n      - alert: SystemDiskLow\n        expr: node_filesystem_avail_bytes{mountpoint=\"/\"} < 25 * 1024 * 1024 * 1024\n        for: 10m\n        labels: {severity: warning}\n        annotations:\n \
+    \         summary: \"Disco del sistema con solo {{ $value | humanize1024 }}B libres\"\n      - alert: SystemDiskCritical\n        expr: node_filesystem_avail_bytes{mountpoint=\"/\"} < 10 * 1024 * 1024\
+    \ * 1024\n        for: 5m\n        labels: {severity: critical}\n        annotations:\n          summary: \"Disco del sistema casi lleno: {{ $value | humanize1024 }}B libres. k3s puede desalojar pods\"\
+    \n      - alert: MediaDiskLow\n        expr: node_filesystem_avail_bytes{mountpoint=~\"/mnt/media[234]\"} / node_filesystem_size_bytes{mountpoint=~\"/mnt/media[234]\"} < 0.05\n        for: 15m\n   \
+    \     labels: {severity: warning}\n        annotations:\n          summary: \"Disco {{ $labels.mountpoint }} con menos del 5% libre\"\n      - alert: FilesystemReadOnly\n        expr: node_filesystem_readonly{mountpoint=~\"\
+    /|/mnt/media[234]\"} == 1\n        for: 1m\n        labels: {severity: critical}\n        annotations:\n          summary: \"{{ $labels.mountpoint }} pas\xF3 a solo lectura (posible falla de disco)\"\
+    \n      - alert: HighTemperature\n        expr: node_hwmon_temp_celsius > 80\n        for: 5m\n        labels: {severity: warning}\n        annotations:\n          summary: \"Temperatura alta: {{ $value\
+    \ }} C en {{ $labels.chip }}\"\n      - alert: ServerRebooted\n        expr: node_time_seconds - node_boot_time_seconds < 600\n        labels: {severity: info}\n        annotations:\n          summary:\
+    \ \"El servidor se reinici\xF3 hace menos de 10 minutos\"\n  - name: kubernetes\n    interval: 60s\n    rules:\n      - alert: ScrapeTargetDown\n        expr: up == 0\n        for: 10m\n        labels:\
+    \ {severity: warning}\n        annotations:\n          summary: \"No hay m\xE9tricas de {{ $labels.job }} ({{ $labels.instance }})\"\n      - alert: NodeNotReady\n        expr: kube_node_status_condition{condition=\"\
+    Ready\",status=\"true\"} == 0\n        for: 2m\n        labels: {severity: critical}\n        annotations:\n          summary: \"El nodo {{ $labels.node }} no est\xE1 Ready\"\n      - alert: PodCrashLooping\n\
+    \        expr: increase(kube_pod_container_status_restarts_total[15m]) > 3\n        for: 5m\n        labels: {severity: warning}\n        annotations:\n          summary: \"{{ $labels.namespace }}/{{\
+    \ $labels.pod }} se reinicia en bucle\"\n      - alert: PodNotRunning\n        expr: sum by (namespace, pod) (kube_pod_status_phase{phase=~\"Pending|Unknown|Failed\"}) > 0\n        for: 10m\n      \
+    \  labels: {severity: warning}\n        annotations:\n          summary: \"{{ $labels.namespace }}/{{ $labels.pod }} no est\xE1 corriendo\"\n      - alert: DeploymentUnavailable\n        expr: kube_deployment_status_replicas_available\
+    \ < kube_deployment_spec_replicas\n        for: 10m\n        labels: {severity: warning}\n        annotations:\n          summary: \"{{ $labels.namespace }}/{{ $labels.deployment }} sin todas sus r\xE9\
+    plicas disponibles\"\n      - alert: ContainerOOMKilled\n        expr: (increase(kube_pod_container_status_restarts_total[10m]) > 0) and on(namespace, pod, container) (kube_pod_container_status_last_terminated_reason{reason=\"\
+    OOMKilled\"} == 1)\n        labels: {severity: warning}\n        annotations:\n          summary: \"{{ $labels.namespace }}/{{ $labels.pod }} fue matado por falta de memoria (OOM)\"\n      - alert:\
+    \ ContainerMemoryNearLimit\n        expr: max by (namespace, pod, container) (container_memory_working_set_bytes{container!=\"\",container!=\"POD\"}) / on(namespace, pod, container) max by (namespace,\
+    \ pod, container) (kube_pod_container_resource_limits{resource=\"memory\"}) > 0.90\n        for: 10m\n        labels: {severity: warning}\n        annotations:\n          summary: \"{{ $labels.namespace\
+    \ }}/{{ $labels.pod }} usa {{ $value | humanizePercentage }} de su l\xEDmite de memoria\"\n      - alert: PVCPending\n        expr: kube_persistentvolumeclaim_status_phase{phase=\"Pending\"} == 1\n\
+    \        for: 10m\n        labels: {severity: warning}\n        annotations:\n          summary: \"PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} sin volumen\"\n  - name: plataforma\n\
+    \    interval: 60s\n    rules:\n      - alert: CertExpiringSoon\n        expr: certmanager_certificate_expiration_timestamp_seconds - time() < 14 * 24 * 3600\n        for: 1h\n        labels: {severity:\
+    \ warning}\n        annotations:\n          summary: \"El certificado {{ $labels.namespace }}/{{ $labels.name }} vence en menos de 14 d\xEDas\"\n      - alert: CertNotReady\n        expr: certmanager_certificate_ready_status{condition=\"\
+    True\"} == 0\n        for: 30m\n        labels: {severity: warning}\n        annotations:\n          summary: \"El certificado {{ $labels.namespace }}/{{ $labels.name }} no est\xE1 Ready\"\n      -\
+    \ alert: ArgoAppOutOfSync\n        expr: argocd_app_info{sync_status!=\"Synced\"} == 1\n        for: 20m\n        labels: {severity: warning}\n        annotations:\n          summary: \"La app {{ $labels.name\
+    \ }} de ArgoCD no coincide con Git\"\n      - alert: ArgoAppUnhealthy\n        expr: argocd_app_info{health_status!~\"Healthy|Progressing\"} == 1\n        for: 10m\n        labels: {severity: warning}\n\
+    \        annotations:\n          summary: \"La app {{ $labels.name }} de ArgoCD est\xE1 {{ $labels.health_status }}\"\n      - alert: TraefikHigh5xx\n        expr: sum(rate(traefik_service_requests_total{code=~\"\
+    5..\"}[5m])) / sum(rate(traefik_service_requests_total[5m])) > 0.05\n        for: 10m\n        labels: {severity: warning}\n        annotations:\n          summary: \"M\xE1s del 5% de las peticiones\
+    \ web dan error 5xx\"\n      - alert: MinIODown\n        expr: up{job=\"minio\"} == 0\n        for: 5m\n        labels: {severity: critical}\n        annotations:\n          summary: \"MinIO no responde\
+    \ (los backups de Velero dependen de \xE9l)\"\n      - alert: VeleroBackupStale\n        expr: time() - velero_backup_last_successful_timestamp{schedule=\"daily\"} > 129600\n        for: 10m\n     \
+    \   labels: {severity: critical}\n        annotations:\n          summary: \"El \xFAltimo backup diario exitoso tiene m\xE1s de 36 horas\"\n      - alert: VeleroBackupFailed\n        expr: increase(velero_backup_failure_total{schedule=\"\
+    daily\"}[1d]) > 0\n        labels: {severity: warning}\n        annotations:\n          summary: \"Fall\xF3 un backup diario de Velero en las \xFAltimas 24 horas\"\n"
 kind: ConfigMap
 metadata:
   name: vmalert-rules
   namespace: monitoring
-

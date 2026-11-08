@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vmagent
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vmagent
+  template:
+    metadata:
+      labels:
+        app: vmagent
+      annotations:
+        checksum/config: e32c789f32b1
+    spec:
+      serviceAccountName: vmagent
+      containers:
+      - name: vmagent
+        image: victoriametrics/vmagent:v1.93.4
+        args:
+        - -promscrape.config=/config/scrape.yml
+        - -remoteWrite.url=http://victoriametrics.monitoring.svc.cluster.local:8428/api/v1/write
+        - -remoteWrite.tmpDataPath=/tmp/vmagent-queue
+        - -httpListenAddr=:8429
+        ports:
+        - containerPort: 8429
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8429
+        volumeMounts:
+        - name: config
+          mountPath: /config
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: config
+        configMap:
+          name: vmagent-config
+      - name: tmp
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vmagent
+  namespace: monitoring
+spec:
+  selector:
+    app: vmagent
+  ports:
+  - name: http
+    port: 8429
+    targetPort: 8429

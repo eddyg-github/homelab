@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vmagent-config
+  namespace: monitoring
+data:
+  scrape.yml: |
+    global:
+      scrape_interval: 30s
+    scrape_configs:
+      - job_name: node-exporter
+        static_configs:
+          - targets: ['node-exporter.monitoring.svc.cluster.local:9101']
+            labels: {node: sparky}
+      - job_name: cadvisor
+        scheme: https
+        scrape_timeout: 25s
+        tls_config: {insecure_skip_verify: true}
+        authorization: {credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
+        kubernetes_sd_configs: [{role: node}]
+        relabel_configs:
+          - {target_label: __address__, replacement: 'kubernetes.default.svc:443'}
+          - {source_labels: [__meta_kubernetes_node_name], target_label: __metrics_path__, replacement: '/api/v1/nodes/$1/proxy/metrics/cadvisor'}
+          - {source_labels: [__meta_kubernetes_node_name], target_label: node}
+        metric_relabel_configs:
+          - {source_labels: [__name__], regex: 'container_(tasks_state|network_tcp_usage_total|network_udp_usage_total)', action: drop}
+      - job_name: kubelet
+        scheme: https
+        scrape_timeout: 25s
+        tls_config: {insecure_skip_verify: true}
+        authorization: {credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
+        kubernetes_sd_configs: [{role: node}]
+        relabel_configs:
+          - {target_label: __address__, replacement: 'kubernetes.default.svc:443'}
+          - {source_labels: [__meta_kubernetes_node_name], target_label: __metrics_path__, replacement: '/api/v1/nodes/$1/proxy/metrics'}
+          - {source_labels: [__meta_kubernetes_node_name], target_label: node}
+      - job_name: apiserver
+        scheme: https
+        scrape_timeout: 25s
+        tls_config: {insecure_skip_verify: true}
+        authorization: {credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token}
+        static_configs:
+          - targets: ['kubernetes.default.svc:443']
+        metric_relabel_configs:
+          - {source_labels: [__name__], regex: 'apiserver_request_(slo|sli)_duration_seconds_bucket|apiserver_response_sizes_bucket|apiserver_watch_events_sizes_bucket', action: drop}
+      - job_name: victoriametrics
+        static_configs: [{targets: ['victoriametrics.monitoring.svc.cluster.local:8428']}]
+      - job_name: vmalert
+        static_configs: [{targets: ['vmalert.monitoring.svc.cluster.local:8880']}]
+      - job_name: vmagent
+        static_configs: [{targets: ['vmagent.monitoring.svc.cluster.local:8429']}]
+      - job_name: alertmanager
+        static_configs: [{targets: ['alertmanager.monitoring.svc.cluster.local:9093']}]
+      - job_name: grafana
+        static_configs: [{targets: ['grafana.monitoring.svc.cluster.local:3000']}]
+      - job_name: minio
+        metrics_path: /minio/v2/metrics/cluster
+        static_configs: [{targets: ['minio.minio.svc.cluster.local:9000']}]

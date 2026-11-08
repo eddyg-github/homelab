@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: monitoring
+data:
+  alertmanager.yml: "global:\n  resolve_timeout: 5m\nroute:\n  receiver: telegram\n  group_by: [alertname, namespace]\n  group_wait: 30s\n  group_interval: 5m\n  repeat_interval: 12h\n  routes:\n    - matchers:\
+    \ ['severity=\"critical\"']\n      receiver: telegram\n      repeat_interval: 4h\ninhibit_rules:\n  - source_matchers: ['severity=\"critical\"']\n    target_matchers: ['severity=\"warning\"']\n    equal:\
+    \ [alertname, namespace]\nreceivers:\n  - name: telegram\n    telegram_configs:\n      - bot_token_file: /etc/alertmanager-secrets/token\n        chat_id: 1157157086\n        send_resolved: true\n \
+    \       parse_mode: ''\n        message: |-\n          {{ range .Alerts }}{{ if eq .Status \"firing\" }}{{ if eq .Labels.severity \"critical\" }}\U0001F534 CR\xCDTICA{{ else if eq .Labels.severity \"\
+    info\" }}\U0001F535 INFO{{ else }}\U0001F7E0 AVISO{{ end }}{{ else }}\u2705 RESUELTA{{ end }}: {{ .Labels.alertname }}\n          {{ .Annotations.summary }}\n          {{ end }}\n"
