@@ -46,5 +46,12 @@ if kubectl get crd backups.velero.io >/dev/null 2>&1; then
   if [ -z "$L" ]; then bad "ningún backup completado"; else AGE=$(( ($(date +%s)-$(date -d "$L" +%s))/3600 )); [ "$AGE" -lt 36 ] && ok "último backup hace ${AGE}h" || bad "último backup hace ${AGE}h (más de 36h)"; fi
 fi
 
+sec "Métricas (targets)"
+R=$(kubectl get --raw "/api/v1/namespaces/monitoring/services/victoriametrics:8428/proxy/api/v1/query?query=%28up%3D%3D0%29" 2>/dev/null)
+if [ -z "$R" ]; then bad "VictoriaMetrics no responde"; else
+  DOWN=$(jq -r '[.data.result[]?|.metric.job]|unique|join(", ")' <<<"$R")
+  [ -z "$DOWN" ] && ok "todos los targets responden" || bad "targets caídos: $DOWN"
+fi
+
 echo; [ $FAIL -eq 0 ] && echo "🟢 LAB OK" || echo "🔴 HAY PROBLEMAS"
 exit $FAIL
