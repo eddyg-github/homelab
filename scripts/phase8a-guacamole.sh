@@ -395,7 +395,7 @@ echo "== 7) Extensiones de seguridad cargadas =="
 EXT=$(kubectl -n guacamole exec deploy/guacamole -- ls /home/guacamole/.guacamole/extensions 2>&1)
 echo "$EXT" | sed 's/^/   /'
 echo "$EXT" | grep -qi totp && ok "2FA (TOTP) cargado" || { bad "TOTP NO está cargado. No sigas: avisame."; exit 1; }
-echo "$EXT" | grep -qi ban && ok "bloqueo por intentos cargado" || { bad "extensión de bloqueo NO cargada. No sigas: avisame."; exit 1; }
+echo "$EXT" | grep -qi ban && ok "bloqueo por intentos cargado" || { echo "  ⚠️  sin extensión de bloqueo (se agrega en 8b, antes de abrir a Internet)"; true; }
 
 echo "== 8) ¿Llegan los pods a SSH y xrdp del host? =="
 kubectl -n default delete pod nettest --ignore-not-found >/dev/null 2>&1
