@@ -392,7 +392,7 @@ for i in $(seq 1 60); do [ "$(kubectl -n guacamole get job guac-db-init -o jsonp
 for d in guacd guacamole; do kubectl -n guacamole rollout status deploy/$d --timeout=420s >/dev/null 2>&1 && ok "$d Ready" || { bad "$d no Ready"; kubectl -n guacamole logs deploy/$d --tail=15 2>&1; exit 1; }; done
 
 echo "== 7) Extensiones de seguridad cargadas =="
-EXT=$(kubectl -n guacamole exec deploy/guacamole -- ls /etc/guacamole/extensions 2>&1)
+EXT=$(kubectl -n guacamole exec deploy/guacamole -- ls /home/guacamole/.guacamole/extensions 2>&1)
 echo "$EXT" | sed 's/^/   /'
 echo "$EXT" | grep -qi totp && ok "2FA (TOTP) cargado" || { bad "TOTP NO está cargado. No sigas: avisame."; exit 1; }
 echo "$EXT" | grep -qi ban && ok "bloqueo por intentos cargado" || { bad "extensión de bloqueo NO cargada. No sigas: avisame."; exit 1; }
