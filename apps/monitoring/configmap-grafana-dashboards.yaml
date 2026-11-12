@@ -40,7 +40,7 @@ data:
       "title": "Servidor y discos",
       "uid": "servidor-discos",
       "schemaVersion": 39,
-      "version": 1,
+      "version": 2,
       "editable": true,
       "refresh": "30s",
       "time": {
@@ -514,9 +514,9 @@ data:
           "title": "SMART: atributos crudos",
           "description": "Todos los atributos tal como los exporta lab-host-metrics. Se afinará a los críticos (sector pendiente, CRC).",
           "gridPos": {
-            "x": 12,
-            "y": 20,
-            "w": 12,
+            "x": 0,
+            "y": 34,
+            "w": 24,
             "h": 8
           },
           "targets": [
@@ -553,6 +553,166 @@ data:
               }
             }
           ]
+        },
+        {
+          "id": 13,
+          "type": "stat",
+          "title": "Sectores pendientes",
+          "description": "Sectores que el disco no pudo leer y espera reubicar. Cualquier valor mayor a 0 conviene vigilarlo (sdd tiene 1).",
+          "gridPos": {
+            "x": 0,
+            "y": 28,
+            "w": 8,
+            "h": 6
+          },
+          "targets": [
+            {
+              "expr": "lab_smart_attribute_raw{name=\"current_pending_sector\"}",
+              "refId": "A",
+              "legendFormat": "{{device}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  },
+                  {
+                    "color": "red",
+                    "value": 5
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "colorMode": "background",
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          }
+        },
+        {
+          "id": 14,
+          "type": "stat",
+          "title": "Errores CRC acumulados",
+          "description": "Contador de por vida: un número alto no significa problema activo. Mirá el panel de 24 h. Suele ser cable SATA.",
+          "gridPos": {
+            "x": 8,
+            "y": 28,
+            "w": 8,
+            "h": 6
+          },
+          "targets": [
+            {
+              "expr": "lab_smart_attribute_raw{name=\"udma_crc_error_count\"}",
+              "refId": "A",
+              "legendFormat": "{{device}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 1
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "colorMode": "background",
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          }
+        },
+        {
+          "id": 15,
+          "type": "stat",
+          "title": "Errores CRC nuevos en 24 h",
+          "description": "Si es mayor a 0, el cable o puerto SATA sigue dando errores ahora.",
+          "gridPos": {
+            "x": 16,
+            "y": 28,
+            "w": 8,
+            "h": 6
+          },
+          "targets": [
+            {
+              "expr": "delta(lab_smart_attribute_raw{name=\"udma_crc_error_count\"}[24h])",
+              "refId": "A",
+              "legendFormat": "{{device}}",
+              "instant": true
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
+                  }
+                ]
+              },
+              "color": {
+                "mode": "thresholds"
+              },
+              "decimals": 0
+            },
+            "overrides": []
+          },
+          "options": {
+            "colorMode": "background",
+            "textMode": "value_and_name",
+            "graphMode": "none",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            }
+          }
         }
       ]
     }
