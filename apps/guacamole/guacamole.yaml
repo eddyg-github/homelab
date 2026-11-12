@@ -21,7 +21,7 @@ spec:
             - {name: GUACD_PORT, value: "4822"}
             - {name: POSTGRESQL_HOSTNAME, value: postgres}
             - {name: POSTGRESQL_DATABASE, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_DB}}}
-            - {name: POSTGRESQL_USERNAME, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_USER}}}
+            - {name: POSTGRESQL_USER, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_USER}}}
             - {name: POSTGRESQL_PASSWORD, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_PASSWORD}}}
             - {name: WEBAPP_CONTEXT, value: ROOT}
             - {name: TOTP_ENABLED, value: "true"}
