@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacamole
+  namespace: guacamole
+  annotations: {argocd.argoproj.io/sync-wave: "2"}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: guacamole}}
+  template:
+    metadata: {labels: {app: guacamole}}
+    spec:
+      securityContext: {seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: guacamole
+          image: guacamole/guacamole:1.5.5
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          ports: [{containerPort: 8080}]
+          env:
+            - {name: GUACD_HOSTNAME, value: guacd}
+            - {name: GUACD_PORT, value: "4822"}
+            - {name: POSTGRESQL_HOSTNAME, value: postgres}
+            - {name: POSTGRESQL_DATABASE, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_DB}}}
+            - {name: POSTGRESQL_USERNAME, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_USER}}}
+            - {name: POSTGRESQL_PASSWORD, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_PASSWORD}}}
+            - {name: WEBAPP_CONTEXT, value: ROOT}
+            - {name: TOTP_ENABLED, value: "true"}
+            - {name: TOTP_ISSUER, value: Sparky Lab}
+            - {name: BAN_ENABLED, value: "true"}
+            - {name: BAN_MAX_INVALID_ATTEMPTS, value: "5"}
+            - {name: BAN_ADDRESS_DURATION, value: "900"}
+            - {name: REMOTE_IP_VALVE_ENABLED, value: "true"}
+            - {name: PROXY_ALLOWED_IPS_REGEX, value: '10\.42\.\d+\.\d+|127\.0\.0\.1|::1'}
+          readinessProbe: {httpGet: {path: /, port: 8080}, initialDelaySeconds: 40, periodSeconds: 10, failureThreshold: 18}
+          resources: {requests: {cpu: 50m, memory: 384Mi}, limits: {memory: 768Mi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: guacamole, namespace: guacamole, annotations: {argocd.argoproj.io/sync-wave: "2"}}
+spec: {selector: {app: guacamole}, ports: [{name: http, port: 8080, targetPort: 8080}]}

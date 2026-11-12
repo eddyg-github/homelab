@@ -327,6 +327,23 @@ data:
           severity: warning
         annotations:
           summary: Hace mas de 3 dias que updn no termina con exito
+    - name: guacamole
+      interval: 60s
+      rules:
+      - alert: GuacamoleLoginFailures
+        expr: sum(increase(traefik_service_requests_total{service=~".*guacamole.*",code="403"}[10m])) > 10
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: Muchos intentos fallidos de login en Guacamole en 10 minutos (posible fuerza bruta)
+      - alert: GuacamoleDumpStale
+        expr: time() - kube_cronjob_status_last_successful_time{cronjob="guac-pgdump"} > 129600
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: El pg_dump de Guacamole no termina con exito hace mas de 36 horas
 kind: ConfigMap
 metadata:
   name: vmalert-rules

@@ -4372,6 +4372,7 @@ spec:
     - argocd
     - cert-manager
     - floci
+    - guacamole
     ttl: 336h0m0s
     storageLocation: default
     snapshotVolumes: false
