@@ -137,6 +137,8 @@ spec:
             - {name: GUACD_HOSTNAME, value: guacd}
             - {name: GUACD_PORT, value: "4822"}
             - {name: POSTGRESQL_HOSTNAME, value: postgres}
+            - {name: POSTGRESQL_PORT, value: "5432"}
+            - {name: POSTGRES_PORT, value: "5432"}
             - {name: POSTGRESQL_DATABASE, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_DB}}}
             - {name: POSTGRESQL_USER, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_USER}}}
             - {name: POSTGRESQL_PASSWORD, valueFrom: {secretKeyRef: {name: guac-db, key: POSTGRES_PASSWORD}}}
