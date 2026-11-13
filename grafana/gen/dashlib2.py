@@ -7,6 +7,11 @@ C = {"cyan": "#22D3EE", "violet": "#A78BFA", "pink": "#F472B6", "green": "#34D39
      "teal": "#2DD4BF", "orange": "#FB923C"}
 GOOD, WARN, BAD, INFO = C["green"], C["amber"], C["red"], C["cyan"]
 
+# Un color fijo por disco físico, igual en todos los paneles (sda=media2, sdc=media3, sdb=media4, sdd=sistema)
+DISK_COLOR = {"sda": C["cyan"], "sdb": C["pink"], "sdc": C["violet"], "sdd": C["amber"]}
+MOUNT_COLOR = {"/": C["amber"], "/mnt/media2": C["cyan"], "/mnt/media3": C["violet"],
+               "/mnt/media4": C["pink"], "/mnt/unified-media": C["teal"]}
+
 LINKS = [{"asDropdown": True, "icon": "dashboard", "includeVars": False, "keepTime": True,
           "tags": ["sparky"], "targetBlank": False, "title": "Dashboards Sparky",
           "tooltip": "", "type": "dashboards", "url": ""}]
@@ -45,12 +50,13 @@ def val_map(d):
                                           for i, (k, (t, c)) in enumerate(d.items())}}]
 
 
-def variable_query(name, label, query):
+def variable_query(name, label, query, default=None):
+    """default: lista de valores preseleccionados (ej. ["media"]); None = All."""
+    cur = {"selected": True, "text": default or ["All"], "value": default or ["$__all"]}
     return {"name": name, "label": label, "type": "query", "hide": 0, "refresh": 2, "sort": 1,
             "query": {"query": query, "refId": "PrometheusVariableQueryEditor-VariableQuery"},
             "definition": query, "multi": True, "includeAll": True, "allValue": ".*",
-            "current": {"selected": True, "text": ["All"], "value": ["$__all"]},
-            "options": [], "regex": "", "skipUrlSync": False}
+            "current": cur, "options": [], "regex": "", "skipUrlSync": False}
 
 
 class Board:
@@ -219,6 +225,25 @@ class Board:
                                  "gridPos": self._place(w, h),
                                  "options": {"mode": "markdown", "content": md}})
 
+    def _colorize(self):
+        """Color por identidad para series de discos y montajes (evita que todo quede verde por los umbrales)."""
+        for p in self.d["panels"]:
+            if p["type"] not in ("timeseries", "bargauge"):
+                continue
+            legs = {t.get("legendFormat") for t in p.get("targets", [])}
+            if "{{mountpoint}}" in legs:
+                src = MOUNT_COLOR
+            elif "{{device}}" in legs and p["type"] == "timeseries":
+                src = DISK_COLOR
+            else:
+                continue
+            ov = p["fieldConfig"]["overrides"]
+            have = {o["matcher"]["options"] for o in ov if o["matcher"]["id"] == "byName"}
+            for k, c in src.items():
+                if k not in have:
+                    ov.append(by_name(k, color_of(c)))
+
     def save(self, path):
+        self._colorize()
         with open(path, "w") as f:
             json.dump(self.d, f, separators=(",", ":"), ensure_ascii=False)

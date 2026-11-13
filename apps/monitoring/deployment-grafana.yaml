@@ -19,6 +19,8 @@ spec:
     metadata:
       labels:
         app: grafana
+      annotations:
+        checksum/dashboards: 922a2a2faf14
     spec:
       containers:
       - env:
