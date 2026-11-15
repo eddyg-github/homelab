@@ -4374,6 +4374,7 @@ spec:
     - floci
     - guacamole
     - vaultwarden
+    - garraham
     ttl: 336h0m0s
     storageLocation: default
     snapshotVolumes: false

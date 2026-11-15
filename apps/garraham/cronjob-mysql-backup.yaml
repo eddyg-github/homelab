@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: mysql-backup
+  namespace: garraham
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    metadata: {}
+    spec:
+      template:
+        metadata: {}
+        spec:
+          containers:
+          - command:
+            - sh
+            - -c
+            - mysqldump -h mysql-service -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction --databases planigrafo_db | gzip > /backup/planigrafo-`date +%F`.sql.gz && find /backup -name 'planigrafo-*.sql.gz'
+              -mtime +14 -delete
+            env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_ROOT_PASSWORD
+                  name: planigrafo-secrets
+            image: mariadb:10.11
+            imagePullPolicy: IfNotPresent
+            name: dump
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /backup
+              name: backup
+          dnsPolicy: ClusterFirst
+          restartPolicy: OnFailure
+          schedulerName: default-scheduler
+          securityContext: {}
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: backup
+            persistentVolumeClaim:
+              claimName: mysql-backup
+  schedule: 0 3 * * *
+  successfulJobsHistoryLimit: 2
+  suspend: false
