@@ -22,7 +22,7 @@ spec:
           command: [sh, -c, "until nc -z nc-postgres 5432 && nc -z nc-redis 6379; do sleep 3; done"]
       containers:
         - name: nextcloud
-          image: nextcloud:apache
+          image: nextcloud:35-apache
           ports: [{containerPort: 80}]
           env:
             - {name: POSTGRES_HOST, value: nc-postgres}
@@ -40,7 +40,7 @@ spec:
             - {name: html, mountPath: /var/www/html}
             - {name: data, mountPath: /var/www/html/data}
         - name: cron
-          image: nextcloud:apache
+          image: nextcloud:35-apache
           securityContext: {runAsUser: 33, runAsGroup: 33}
           command: [sh, -c, "while true; do sleep 300; [ -f /var/www/html/config/config.php ] && php -f /var/www/html/cron.php; done"]
           resources: {requests: {cpu: 5m, memory: 64Mi}, limits: {memory: 256Mi}}
