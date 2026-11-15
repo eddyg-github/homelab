@@ -24,7 +24,7 @@ spec:
           env:
             - {name: ROCKET_PORT, value: "8080"}
             - {name: DOMAIN, value: "https://vaultwarden.lyxar.dedyn.io"}
-            - {name: SIGNUPS_ALLOWED, value: "true"}
+            - {name: SIGNUPS_ALLOWED, value: "false"}
             - {name: INVITATIONS_ALLOWED, value: "false"}
             - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: vw-env, key: ADMIN_TOKEN}}}
           readinessProbe: {httpGet: {path: /alive, port: 8080}, periodSeconds: 10, failureThreshold: 12}
