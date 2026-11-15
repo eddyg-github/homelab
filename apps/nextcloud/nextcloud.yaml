@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: nc-html, namespace: nextcloud}
+spec: {accessModes: [ReadWriteOnce], storageClassName: local-path, resources: {requests: {storage: 4Gi}}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: nextcloud, namespace: nextcloud}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: nextcloud}}
+  template:
+    metadata:
+      labels: {app: nextcloud}
+      annotations: {backup.velero.io/backup-volumes: html}
+    spec:
+      securityContext: {seccompProfile: {type: RuntimeDefault}}
+      initContainers:
+        - name: wait-db
+          image: busybox:1.36
+          command: [sh, -c, "until nc -z nc-postgres 5432 && nc -z nc-redis 6379; do sleep 3; done"]
+      containers:
+        - name: nextcloud
+          image: nextcloud:apache
+          ports: [{containerPort: 80}]
+          env:
+            - {name: POSTGRES_HOST, value: nc-postgres}
+            - {name: REDIS_HOST, value: nc-redis}
+            - {name: NEXTCLOUD_TRUSTED_DOMAINS, value: nextcloud.lyxar.dedyn.io}
+            - {name: OVERWRITEHOST, value: nextcloud.lyxar.dedyn.io}
+            - {name: OVERWRITEPROTOCOL, value: https}
+            - {name: TRUSTED_PROXIES, value: 10.42.0.0/16}
+            - {name: PHP_MEMORY_LIMIT, value: 512M}
+            - {name: PHP_UPLOAD_LIMIT, value: 10G}
+          envFrom: [{secretRef: {name: nc-env}}]
+          readinessProbe: {tcpSocket: {port: 80}, periodSeconds: 10, failureThreshold: 120}
+          resources: {requests: {cpu: 100m, memory: 256Mi}, limits: {memory: 1Gi}}
+          volumeMounts:
+            - {name: html, mountPath: /var/www/html}
+            - {name: data, mountPath: /var/www/html/data}
+        - name: cron
+          image: nextcloud:apache
+          securityContext: {runAsUser: 33, runAsGroup: 33}
+          command: [sh, -c, "while true; do sleep 300; [ -f /var/www/html/config/config.php ] && php -f /var/www/html/cron.php; done"]
+          resources: {requests: {cpu: 5m, memory: 64Mi}, limits: {memory: 256Mi}}
+          volumeMounts:
+            - {name: html, mountPath: /var/www/html}
+            - {name: data, mountPath: /var/www/html/data}
+      volumes:
+        - {name: html, persistentVolumeClaim: {claimName: nc-html}}
+        - {name: data, hostPath: {path: /mnt/media3/nextcloud, type: Directory}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: nextcloud, namespace: nextcloud}
+spec: {selector: {app: nextcloud}, ports: [{name: http, port: 80, targetPort: 80}]}

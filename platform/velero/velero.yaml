@@ -4375,6 +4375,7 @@ spec:
     - guacamole
     - vaultwarden
     - garraham
+    - nextcloud
     ttl: 336h0m0s
     storageLocation: default
     snapshotVolumes: false

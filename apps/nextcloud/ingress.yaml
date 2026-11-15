@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: nextcloud-lan-only@kubernetescrd,nextcloud-ratelimit@kubernetescrd,nextcloud-headers@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls: [{hosts: [nextcloud.lyxar.dedyn.io], secretName: nextcloud-tls}]
+  rules:
+    - host: nextcloud.lyxar.dedyn.io
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: nextcloud, port: {number: 80}}}}
