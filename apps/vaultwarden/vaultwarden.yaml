@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: vw-data, namespace: vaultwarden}
+spec: {accessModes: [ReadWriteOnce], storageClassName: local-path, resources: {requests: {storage: 1Gi}}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: vaultwarden, namespace: vaultwarden}
+spec:
+  replicas: 1
+  strategy: {type: Recreate}
+  selector: {matchLabels: {app: vaultwarden}}
+  template:
+    metadata:
+      labels: {app: vaultwarden}
+      annotations: {backup.velero.io/backup-volumes: data}
+    spec:
+      securityContext: {runAsUser: 1000, runAsGroup: 1000, fsGroup: 1000, runAsNonRoot: true, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: vaultwarden
+          image: vaultwarden/server:latest
+          securityContext: {allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
+          ports: [{containerPort: 8080}]
+          env:
+            - {name: ROCKET_PORT, value: "8080"}
+            - {name: DOMAIN, value: "https://vaultwarden.lyxar.dedyn.io"}
+            - {name: SIGNUPS_ALLOWED, value: "true"}
+            - {name: INVITATIONS_ALLOWED, value: "false"}
+            - {name: ADMIN_TOKEN, valueFrom: {secretKeyRef: {name: vw-env, key: ADMIN_TOKEN}}}
+          readinessProbe: {httpGet: {path: /alive, port: 8080}, periodSeconds: 10, failureThreshold: 12}
+          resources: {requests: {cpu: 20m, memory: 64Mi}, limits: {memory: 256Mi}}
+          volumeMounts: [{name: data, mountPath: /data}]
+      volumes: [{name: data, persistentVolumeClaim: {claimName: vw-data}}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: vaultwarden, namespace: vaultwarden}
+spec: {selector: {app: vaultwarden}, ports: [{name: http, port: 8080, targetPort: 8080}]}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata: {name: vw-sqlite-backup, namespace: vaultwarden}
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          securityContext: {fsGroup: 1000}
+          containers:
+            - name: backup
+              image: alpine:3.20
+              command: [/bin/sh, -c]
+              args:
+                - |
+                  set -e
+                  apk add --no-cache sqlite >/dev/null
+                  mkdir -p /data/backups
+                  sqlite3 /data/db.sqlite3 ".backup '/data/backups/db-$(date +%F).sqlite3'"
+                  find /data/backups -name 'db-*.sqlite3' -mtime +7 -delete
+                  chown -R 1000:1000 /data/backups
+                  ls -la /data/backups
+              resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 128Mi}}
+              volumeMounts: [{name: data, mountPath: /data}]
+          volumes: [{name: data, persistentVolumeClaim: {claimName: vw-data}}]

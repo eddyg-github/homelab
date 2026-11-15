@@ -4373,6 +4373,7 @@ spec:
     - cert-manager
     - floci
     - guacamole
+    - vaultwarden
     ttl: 336h0m0s
     storageLocation: default
     snapshotVolumes: false

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: vaultwarden
+  namespace: vaultwarden
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: vaultwarden-lan-only@kubernetescrd,vaultwarden-ratelimit@kubernetescrd,vaultwarden-headers@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls: [{hosts: [vaultwarden.lyxar.dedyn.io], secretName: vaultwarden-tls}]
+  rules:
+    - host: vaultwarden.lyxar.dedyn.io
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: vaultwarden, port: {number: 8080}}}}
