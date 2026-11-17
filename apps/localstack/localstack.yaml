@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Service
+metadata: {name: localstack, namespace: localstack}
+spec: {ports: [{name: http, port: 4566, targetPort: 4566}]}
+---
+apiVersion: v1
+kind: Endpoints
+metadata: {name: localstack, namespace: localstack}
+subsets: [{addresses: [{ip: 192.168.1.47}], ports: [{name: http, port: 4566}]}]
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata: {name: lan-only, namespace: localstack}
+spec:
+  ipAllowList:
+    sourceRange: ["192.168.1.0/24", "100.64.0.0/10", "127.0.0.1/32", "10.8.0.0/24"]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: localstack
+  namespace: localstack
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: localstack-lan-only@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls: [{hosts: [localstack.lyxar.dedyn.io], secretName: localstack-tls}]
+  rules:
+    - host: localstack.lyxar.dedyn.io
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: localstack, port: {number: 4566}}}}
