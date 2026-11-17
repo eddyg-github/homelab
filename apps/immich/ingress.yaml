@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: immich
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.middlewares: immich-lan-only@kubernetescrd,immich-ratelimit@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls: [{hosts: [immich.lyxar.dedyn.io], secretName: immich-tls}]
+  rules:
+    - host: immich.lyxar.dedyn.io
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: immich-server, port: {number: 2283}}}}

@@ -4376,6 +4376,7 @@ spec:
     - vaultwarden
     - garraham
     - nextcloud
+    - immich
     ttl: 336h0m0s
     storageLocation: default
     snapshotVolumes: false

@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: default-deny-ingress, namespace: immich}
+spec: {podSelector: {}, policyTypes: [Ingress]}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: traefik-to-immich, namespace: immich}
+spec:
+  podSelector: {matchLabels: {app: immich-server}}
+  ingress:
+    - from: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}]
+      ports: [{port: 2283}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: traefik-to-acme-solver, namespace: immich}
+spec:
+  podSelector: {matchLabels: {acme.cert-manager.io/http01-solver: "true"}}
+  ingress:
+    - from: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}]
+      ports: [{port: 8089}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: to-postgres, namespace: immich}
+spec:
+  podSelector: {matchLabels: {app: im-postgres}}
+  ingress:
+    - from: [{podSelector: {matchExpressions: [{key: app, operator: In, values: [immich-server, im-dbtools]}]}}]
+      ports: [{port: 5432}]
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: to-valkey, namespace: immich}
+spec:
+  podSelector: {matchLabels: {app: im-valkey}}
+  ingress:
+    - from: [{podSelector: {matchLabels: {app: immich-server}}}]
+      ports: [{port: 6379}]
