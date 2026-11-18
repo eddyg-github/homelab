@@ -9,11 +9,11 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: localstack-proxy
+      app: localstack
   template:
     metadata:
       labels:
-        app: localstack-proxy
+        app: localstack
     spec:
       containers:
       - name: socat

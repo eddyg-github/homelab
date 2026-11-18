@@ -7,7 +7,7 @@ metadata:
     argocd.argoproj.io/tracking-id: app-localstack:/Service:localstack/localstack
 spec:
   selector:
-    app: localstack-proxy
+    app: localstack
   ports:
   - name: http
     port: 4566
