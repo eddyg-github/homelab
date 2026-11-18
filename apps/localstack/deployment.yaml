@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: localstack-proxy
+  namespace: localstack
+  annotations:
+    argocd.argoproj.io/tracking-id: app-localstack:/Deployment:localstack/localstack-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: localstack-proxy
+  template:
+    metadata:
+      labels:
+        app: localstack-proxy
+    spec:
+      containers:
+      - name: socat
+        image: alpine/socat:latest
+        command: ["socat"]
+        args:
+        - TCP-LISTEN:4566,fork,reuseaddr
+        - TCP:172.17.0.1:4566
+        ports:
+        - containerPort: 4566
+          name: http
