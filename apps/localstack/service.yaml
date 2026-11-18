@@ -6,9 +6,8 @@ metadata:
   annotations:
     argocd.argoproj.io/tracking-id: app-localstack:/Service:localstack/localstack
 spec:
-  type: ExternalName
-  externalName: 172.17.0.1
   ports:
   - name: http
     port: 4566
+    protocol: TCP
     targetPort: 4566
