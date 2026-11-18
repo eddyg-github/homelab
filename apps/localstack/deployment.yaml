@@ -21,7 +21,7 @@ spec:
         command: ["socat"]
         args:
         - TCP-LISTEN:4566,fork,reuseaddr
-        - TCP:172.17.0.1:4566
+        - TCP:127.0.0.1:4566
         ports:
         - containerPort: 4566
           name: http
