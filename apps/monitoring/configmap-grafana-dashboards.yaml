@@ -3908,8 +3908,7 @@ data:
          "color": {
           "mode": "fixed",
           "fixedColor": "#F6821F"
-         },
-         "displayName": "Cloudflare\nBajada"
+         }
         },
         "overrides": []
        },
@@ -3925,8 +3924,8 @@ data:
         "showThresholdLabels": false,
         "orientation": "auto",
         "text": {
-         "valueSize": 32,
-         "titleSize": 22
+         "valueSize": 28,
+         "titleSize": 18
         }
        }
       },
@@ -3967,8 +3966,7 @@ data:
          "color": {
           "mode": "fixed",
           "fixedColor": "#F6821F"
-         },
-         "displayName": "Cloudflare\nSubida"
+         }
         },
         "overrides": []
        },
@@ -3984,8 +3982,8 @@ data:
         "showThresholdLabels": false,
         "orientation": "auto",
         "text": {
-         "valueSize": 32,
-         "titleSize": 22
+         "valueSize": 28,
+         "titleSize": 18
         }
        }
       },
@@ -4026,8 +4024,7 @@ data:
          "color": {
           "mode": "fixed",
           "fixedColor": "#22D3EE"
-         },
-         "displayName": "Personal\nBajada"
+         }
         },
         "overrides": []
        },
@@ -4043,8 +4040,8 @@ data:
         "showThresholdLabels": false,
         "orientation": "auto",
         "text": {
-         "valueSize": 32,
-         "titleSize": 22
+         "valueSize": 28,
+         "titleSize": 18
         }
        }
       },
@@ -4085,8 +4082,7 @@ data:
          "color": {
           "mode": "fixed",
           "fixedColor": "#22D3EE"
-         },
-         "displayName": "Personal\nSubida"
+         }
         },
         "overrides": []
        },
@@ -4102,8 +4098,8 @@ data:
         "showThresholdLabels": false,
         "orientation": "auto",
         "text": {
-         "valueSize": 32,
-         "titleSize": 22
+         "valueSize": 28,
+         "titleSize": 18
         }
        }
       },
