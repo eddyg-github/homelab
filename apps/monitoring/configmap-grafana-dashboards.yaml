@@ -3922,7 +3922,8 @@ data:
         },
         "showThresholdMarkers": false,
         "showThresholdLabels": false,
-        "orientation": "auto"
+        "orientation": "auto",
+        "titleFontSize": 20
        }
       },
       {
@@ -3976,7 +3977,8 @@ data:
         },
         "showThresholdMarkers": false,
         "showThresholdLabels": false,
-        "orientation": "auto"
+        "orientation": "auto",
+        "titleFontSize": 20
        }
       },
       {
@@ -4030,7 +4032,8 @@ data:
         },
         "showThresholdMarkers": false,
         "showThresholdLabels": false,
-        "orientation": "auto"
+        "orientation": "auto",
+        "titleFontSize": 20
        }
       },
       {
@@ -4084,7 +4087,8 @@ data:
         },
         "showThresholdMarkers": false,
         "showThresholdLabels": false,
-        "orientation": "auto"
+        "orientation": "auto",
+        "titleFontSize": 20
        }
       },
       {
