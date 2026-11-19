@@ -3816,7 +3816,59 @@ data:
       "list": []
      },
      "templating": {
-      "list": []
+      "list": [
+       {
+        "name": "ventana",
+        "label": "Per\u00edodo",
+        "type": "custom",
+        "query": "\u00daltima hora : 1h,\u00daltimas 6h : 6h,Diario (24h) : 1d,Semanal (7d) : 7d,Mensual (30d) : 30d,Trimestral (90d) : 90d,Rango del reloj : $__range",
+        "current": {
+         "selected": true,
+         "text": "Diario (24h)",
+         "value": "1d"
+        },
+        "options": [
+         {
+          "selected": false,
+          "text": "\u00daltima hora",
+          "value": "1h"
+         },
+         {
+          "selected": false,
+          "text": "\u00daltimas 6h",
+          "value": "6h"
+         },
+         {
+          "selected": true,
+          "text": "Diario (24h)",
+          "value": "1d"
+         },
+         {
+          "selected": false,
+          "text": "Semanal (7d)",
+          "value": "7d"
+         },
+         {
+          "selected": false,
+          "text": "Mensual (30d)",
+          "value": "30d"
+         },
+         {
+          "selected": false,
+          "text": "Trimestral (90d)",
+          "value": "90d"
+         },
+         {
+          "selected": false,
+          "text": "Rango del reloj",
+          "value": "$__range"
+         }
+        ],
+        "includeAll": false,
+        "multi": false,
+        "hide": 0
+       }
+      ]
      },
      "panels": [
       {
@@ -3839,7 +3891,7 @@ data:
           "type": "prometheus",
           "uid": "P4169E866C3094E38"
          },
-         "expr": "avg(last_over_time(speedtest_download_mbps{provider=\"cloudflare\"}[7d]))",
+         "expr": "avg(avg_over_time(speedtest_download_mbps{provider=\"cloudflare\"}[$ventana]))",
          "legendFormat": "Cloudflare - Bajada",
          "instant": true,
          "range": false,
@@ -3893,7 +3945,7 @@ data:
           "type": "prometheus",
           "uid": "P4169E866C3094E38"
          },
-         "expr": "avg(last_over_time(speedtest_upload_mbps{provider=\"cloudflare\"}[7d]))",
+         "expr": "avg(avg_over_time(speedtest_upload_mbps{provider=\"cloudflare\"}[$ventana]))",
          "legendFormat": "Cloudflare - Subida",
          "instant": true,
          "range": false,
@@ -3947,7 +3999,7 @@ data:
           "type": "prometheus",
           "uid": "P4169E866C3094E38"
          },
-         "expr": "avg(last_over_time(speedtest_download_mbps{provider=\"personal\"}[7d]))",
+         "expr": "avg(avg_over_time(speedtest_download_mbps{provider=\"personal\"}[$ventana]))",
          "legendFormat": "Personal - Bajada",
          "instant": true,
          "range": false,
@@ -4001,7 +4053,7 @@ data:
           "type": "prometheus",
           "uid": "P4169E866C3094E38"
          },
-         "expr": "avg(last_over_time(speedtest_upload_mbps{provider=\"personal\"}[7d]))",
+         "expr": "avg(avg_over_time(speedtest_upload_mbps{provider=\"personal\"}[$ventana]))",
          "legendFormat": "Personal - Subida",
          "instant": true,
          "range": false,
@@ -4820,7 +4872,28 @@ data:
         }
        }
       }
-     ]
+     ],
+     "timepicker": {
+      "refresh_intervals": [
+       "10s",
+       "30s",
+       "1m",
+       "5m",
+       "15m",
+       "30m",
+       "1h"
+      ],
+      "time_options": [
+       "1h",
+       "6h",
+       "12h",
+       "24h",
+       "2d",
+       "7d",
+       "30d",
+       "90d"
+      ]
+     }
     }
 kind: ConfigMap
 metadata:
