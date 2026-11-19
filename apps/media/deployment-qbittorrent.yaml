@@ -67,7 +67,7 @@ spec:
         command:
         - sh
         - -c
-        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        - T=1200; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
         resources:
           requests:
             cpu: 1m
