@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    traefik.ingress.kubernetes.io/router.middlewares: ai-lan-only@kubernetescrd
+  name: litellm
+  namespace: ai
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: llm.lyxar.dedyn.io
+    http:
+      paths:
+      - backend:
+          service:
+            name: litellm
+            port:
+              number: 4000
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - llm.lyxar.dedyn.io
+    secretName: llm-tls

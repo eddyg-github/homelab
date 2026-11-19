@@ -1,7 +1,9 @@
-SECRETS*
-*.key
-*.pem
-*.tfstate*
-.terraform/
+ai-stack/
+*config.env
 homelab-backup/
+*.key
 *master-key*
+*.pem
+SECRETS*
+.terraform/
+*.tfstate*

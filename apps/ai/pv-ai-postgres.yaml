@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ai-postgres
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 5Gi
+  claimRef:
+    kind: PersistentVolumeClaim
+    name: postgres-data
+    namespace: ai
+    apiVersion: v1
+  hostPath:
+    path: /mnt/media4/_ai-stack/postgres
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ai-manual
+  volumeMode: Filesystem

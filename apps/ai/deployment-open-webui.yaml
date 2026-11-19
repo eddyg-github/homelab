@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-webui
+  namespace: ai
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: open-webui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: open-webui
+      annotations:
+        backup.velero.io/backup-volumes: data
+    spec:
+      containers:
+      - env:
+        - name: RAG_OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: LITELLM_MASTER_KEY
+              name: ai-core
+        - name: PYTHONPATH
+          value: /opt/ow-pkgs
+        - name: WEBUI_NAME
+          value: Sparky AI
+        - name: OPENAI_API_BASE_URL
+          value: http://litellm:4000/v1
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: LITELLM_MASTER_KEY
+              name: ai-core
+        - name: OLLAMA_BASE_URL
+          value: http://ollama:11434
+        - name: WEBUI_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              key: WEBUI_SECRET_KEY
+              name: ai-core
+        - name: OPENWEBUI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: OPENWEBUI_DB_PASSWORD
+              name: ai-core
+        - name: DATABASE_URL
+          value: postgresql://openwebui:$(OPENWEBUI_DB_PASSWORD)@postgres:5432/openwebui
+        - name: RAG_EMBEDDING_ENGINE
+          value: openai
+        - name: RAG_EMBEDDING_MODEL
+          value: gemini-embed
+        - name: RAG_OLLAMA_BASE_URL
+          value: http://ollama:11434
+        - name: ENABLE_SIGNUP
+          value: 'true'
+        - name: DEFAULT_USER_ROLE
+          value: pending
+        - name: TZ
+          value: America/Argentina/Buenos_Aires
+        - name: RAG_EMBEDDING_MODEL_AUTO_UPDATE
+          value: 'false'
+        - name: RAG_RERANKING_MODEL_AUTO_UPDATE
+          value: 'false'
+        - name: WHISPER_MODEL_AUTO_UPDATE
+          value: 'false'
+        - name: RAG_OPENAI_API_BASE_URL
+          value: http://litellm:4000/v1
+        - name: RAG_EMBEDDING_BATCH_SIZE
+          value: '16'
+        - name: ENABLE_PERSISTENT_CONFIG
+          value: 'False'
+        - name: CHUNK_SIZE
+          value: '3000'
+        - name: CHUNK_OVERLAP
+          value: '200'
+        - name: RAG_EMBEDDING_CONCURRENT_REQUESTS
+          value: '1'
+        - name: ENABLE_MARKDOWN_HEADER_TEXT_SPLITTER
+          value: 'False'
+        - name: CHUNK_MIN_SIZE_TARGET
+          value: '1500'
+        - name: ENABLE_AUTOCOMPLETE_GENERATION
+          value: 'False'
+        - name: ENABLE_TAGS_GENERATION
+          value: 'False'
+        - name: ENABLE_FOLLOW_UP_GENERATION
+          value: 'False'
+        image: ghcr.io/open-webui/open-webui:main
+        imagePullPolicy: IfNotPresent
+        name: open-webui
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: 1500m
+            memory: 1536Mi
+          requests:
+            cpu: 200m
+            memory: 384Mi
+        startupProbe:
+          failureThreshold: 120
+          httpGet:
+            path: /health
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /opt/ow-pkgs
+          name: owpkgs
+          readOnly: true
+        - mountPath: /app/backend/data
+          name: data
+      dnsPolicy: ClusterFirst
+      priorityClassName: ai-low
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /mnt/media4/_ai-stack/ow-pkgs
+          type: Directory
+        name: owpkgs
+      - name: data
+        persistentVolumeClaim:
+          claimName: openwebui-data

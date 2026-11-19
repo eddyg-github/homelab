@@ -36,3 +36,7 @@ spec:
         jqPathExpressions:
         - .metadata.annotations["field.cattle.io/publicEndpoints"]
         - .metadata.annotations["field.cattle.io/ports"]
+      - group: apps
+        kind: Deployment
+        jqPathExpressions:
+        - .spec.replicas

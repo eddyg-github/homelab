@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm
+  namespace: ai
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: litellm
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: litellm
+    spec:
+      containers:
+      - args:
+        - --config
+        - /app/config.yaml
+        - --port
+        - '4000'
+        command:
+        - /data/pkgs/bin/litellm
+        env:
+        - name: PYTHONPATH
+          value: /data/pkgs
+        - name: HOME
+          value: /data/home
+        - name: PATH
+          value: /data/pkgs/bin:/usr/local/bin:/usr/bin:/bin
+        - name: LITELLM_MASTER_KEY
+          valueFrom:
+            secretKeyRef:
+              key: LITELLM_MASTER_KEY
+              name: ai-core
+        - name: VALKEY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: VALKEY_PASSWORD
+              name: ai-core
+        envFrom:
+        - secretRef:
+            name: ai-providers
+        image: python:3.12-slim
+        imagePullPolicy: IfNotPresent
+        name: litellm
+        ports:
+        - containerPort: 4000
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /health/readiness
+            port: 4000
+            scheme: HTTP
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1536Mi
+          requests:
+            cpu: 200m
+            memory: 512Mi
+        startupProbe:
+          failureThreshold: 60
+          httpGet:
+            path: /health/liveliness
+            port: 4000
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /data
+          name: pkgs
+        - mountPath: /app/config.yaml
+          name: config
+          subPath: config.yaml
+      dnsPolicy: ClusterFirst
+      priorityClassName: ai-low
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - hostPath:
+          path: /mnt/media4/_ai-stack/litellm
+          type: DirectoryOrCreate
+        name: pkgs
+      - configMap:
+          defaultMode: 420
+          name: litellm-config
+        name: config

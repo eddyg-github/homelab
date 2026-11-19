@@ -11,16 +11,14 @@ spec:
     matchLabels:
       app: grafana
   strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
         app: grafana
       annotations:
         checksum/dashboards: 922a2a2faf14
+        backup.velero.io/backup-volumes: gdata
     spec:
       containers:
       - env:
@@ -70,10 +68,13 @@ spec:
           name: dashboard-providers
         - mountPath: /var/lib/grafana/dashboards
           name: dashboards
+        - name: gdata
+          mountPath: /var/lib/grafana
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
-      securityContext: {}
+      securityContext:
+        fsGroup: 472
       terminationGracePeriodSeconds: 30
       volumes:
       - configMap:
@@ -88,3 +89,6 @@ spec:
           defaultMode: 420
           name: grafana-dashboards
         name: dashboards
+      - name: gdata
+        persistentVolumeClaim:
+          claimName: grafana-data

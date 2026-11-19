@@ -1,0 +1,143 @@
+apiVersion: v1
+data:
+  app.py: "import os, sys, time, json, ssl, html, re, base64, threading, statistics, http.client\nimport urllib.request, urllib.parse, urllib.error\nimport xml.etree.ElementTree as ET\nfrom collections\
+    \ import deque\nfrom datetime import datetime, timezone, timedelta\nfrom http.server import BaseHTTPRequestHandler, ThreadingHTTPServer\n\nINTERVAL = int(os.environ.get(\"TEST_INTERVAL\", \"300\"))\n\
+    DURATION = int(os.environ.get(\"TEST_DURATION\", \"5\"))\nTHREADS = int(os.environ.get(\"TEST_THREADS\", \"4\"))\nVM_URL = os.environ.get(\"VM_WRITE_URL\", \"\")\nPORT = int(os.environ.get(\"PORT\"\
+    , \"8080\"))\nISP_ENABLED = os.environ.get(\"ISP_ENABLED\", \"true\").lower() == \"true\"\nISP_MATCH = os.environ.get(\"ISP_MATCH\", \"personal,telecom,fibertel\")\nISP_SERVER_ID = os.environ.get(\"\
+    ISP_SERVER_ID\", \"\").strip()\nISP_SERVER_URL = os.environ.get(\"ISP_SERVER_URL\", \"\").strip()\nHISTORY = deque(maxlen=int(os.environ.get(\"HISTORY_SIZE\", \"300\")))\nART = timezone(timedelta(hours=-3))\n\
+    CTX = ssl.create_default_context()\nUA_STR = \"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36\"\nUA = {\"User-Agent\": UA_STR, \"Accept\": \"application/json,\
+    \ text/xml, */*\"}\nHDR = {\"User-Agent\": UA_STR, \"Cache-Control\": \"no-cache\"}\ntrigger = threading.Event()\nstate = {\"running\": False, \"started\": 0.0, \"last\": {}}\nISP = {\"t\": None, \"\
+    at\": 0.0}\nCF_INTERVAL = int(os.environ.get(\"CF_INTERVAL\", \"900\"))\nLAST_CF = [0.0]\nCF_BLOCK = [0.0]\n\n\ndef cf_target():\n    return {\"provider\": \"cloudflare\", \"label\": \"Cloudflare\"\
+    , \"scheme\": \"https\",\n            \"host\": \"speed.cloudflare.com\", \"port\": 443, \"trace\": True, \"threads\": int(os.environ.get(\"CF_THREADS\", \"4\")), \"duration\": int(os.environ.get(\"\
+    CF_DURATION\", \"3\")),\n            \"ping\": lambda: \"/__down?bytes=0\",\n            \"down\": lambda: \"/__down?bytes=25000000\",\n            \"up_path\": \"/__up\", \"up_prefix\": b\"\", \"up_ctype\"\
+    : \"application/octet-stream\"}\n\n\ndef ookla_target(s):\n    u = urllib.parse.urlparse(s[\"url\"])\n    base = u.path.rsplit(\"/\", 1)[0]\n    return {\"provider\": \"personal\", \"label\": \"Personal\"\
+    , \"scheme\": u.scheme,\n            \"host\": u.hostname, \"port\": u.port or (443 if u.scheme == \"https\" else 80),\n            \"server\": \"ookla-%s\" % s.get(\"id\", \"custom\"),\n          \
+    \  \"name\": (\"%s %s\" % (s.get(\"sponsor\", \"\"), s.get(\"name\", \"\"))).strip(),\n            \"ping\": lambda: \"%s/latency.txt?x=%d\" % (base, time.time_ns()),\n            \"down\": lambda:\
+    \ \"%s/random3000x3000.jpg?x=%d\" % (base, time.time_ns()),\n            \"up_path\": u.path, \"up_prefix\": b\"content1=\",\n            \"up_ctype\": \"application/x-www-form-urlencoded\"}\n\n\ndef\
+    \ conn(t):\n    if t[\"scheme\"] == \"https\":\n        return http.client.HTTPSConnection(t[\"host\"], t[\"port\"], timeout=10, context=CTX)\n    return http.client.HTTPConnection(t[\"host\"], t[\"\
+    port\"], timeout=10)\n\n\ndef http_get(url):\n    req = urllib.request.Request(url, headers=UA)\n    return urllib.request.urlopen(req, timeout=20, context=CTX).read()\n\n\ndef api_servers():\n    found\
+    \ = {}\n    qs = [x.strip() for x in ISP_MATCH.split(\",\") if x.strip()]\n    if ISP_SERVER_ID:\n        qs.append(ISP_SERVER_ID)\n    for q in qs:\n        try:\n            url = \"https://www.speedtest.net/api/js/servers?engine=js&limit=20&search=\"\
+    \ + urllib.parse.quote(q)\n            for s in json.loads(http_get(url)):\n                found[str(s[\"id\"])] = s\n        except Exception:\n            pass\n    return list(found.values())\n\n\
+    \ndef xml_servers():\n    root = ET.fromstring(http_get(\"https://www.speedtest.net/speedtest-servers-static.php\"))\n    return [dict(e.attrib) for e in root.iter(\"server\")]\n\n\ndef wanted(s):\n\
+    \    if ISP_SERVER_ID:\n        return str(s.get(\"id\")) == ISP_SERVER_ID\n    if s.get(\"cc\", \"\").upper() != \"AR\":\n        return False\n    text = (s.get(\"sponsor\", \"\") + \" \" + s.get(\"\
+    name\", \"\")).lower()\n    return any(m.strip().lower() in text for m in ISP_MATCH.split(\",\") if m.strip())\n\n\ndef url_variants(s):\n    urls = [s[\"url\"]]\n    if s[\"url\"].startswith(\"http://\"\
+    ):\n        urls.append(\"https://\" + s[\"url\"][7:])\n    return urls\n\n\ndef candidates():\n    cands = [s for s in api_servers() if wanted(s)]\n    if not cands:\n        try:\n            cands\
+    \ = [s for s in xml_servers() if wanted(s)]\n        except Exception:\n            cands = []\n    return cands\n\n\ndef discover_isp():\n    if ISP_SERVER_URL:\n        return ookla_target({\"url\"\
+    : ISP_SERVER_URL, \"id\": \"custom\", \"sponsor\": \"custom\"})\n    cands = candidates()\n    if not cands:\n        raise RuntimeError(\"no hay servidor Ookla de Personal/Telecom en la lista (probar\
+    \ ISP_SERVER_ID)\")\n    best = None\n    errs = []\n    for s in cands[:6]:\n        for u in url_variants(s):\n            t = ookla_target(dict(s, url=u))\n            try:\n                p, _\
+    \ = measure_latency(t, n=4)\n            except Exception as e:\n                errs.append(\"%s %s: %s\" % (s.get(\"id\"), u.split(\"/\")[2], str(e)[:60]))\n                continue\n            if\
+    \ best is None or p < best[0]:\n                best = (p, t)\n            break\n    if best is None:\n        raise RuntimeError(\"ningun servidor respondio: \" + \" | \".join(errs[:4]))\n    return\
+    \ best[1]\n\n\ndef get_isp_target():\n    if ISP[\"t\"] and time.time() - ISP[\"at\"] < 86400:\n        return ISP[\"t\"]\n    try:\n        ISP[\"t\"] = discover_isp()\n        ISP[\"at\"] = time.time()\n\
+    \    except Exception:\n        if not ISP[\"t\"]:\n            raise\n    return ISP[\"t\"]\n\n\ndef get_trace(t):\n    try:\n        c = conn(t)\n        c.request(\"GET\", \"/cdn-cgi/trace\", headers=HDR)\n\
+    \        txt = c.getresponse().read().decode()\n        c.close()\n        kv = dict(l.split(\"=\", 1) for l in txt.splitlines() if \"=\" in l)\n        return kv.get(\"colo\", \"unknown\"), kv.get(\"\
+    ip\", \"\")\n    except Exception:\n        return \"unknown\", \"\"\n\n\ndef measure_latency(t, n=10):\n    c = conn(t)\n    samples = []\n    try:\n        for i in range(n + 1):\n            t0 =\
+    \ time.perf_counter()\n            c.request(\"GET\", t[\"ping\"](), headers=HDR)\n            r = c.getresponse()\n            r.read()\n            if r.status != 200:\n                raise RuntimeError(\"\
+    ping HTTP %d\" % r.status)\n            d = (time.perf_counter() - t0) * 1000\n            if i > 0:\n                samples.append(d)\n    finally:\n        c.close()\n    jitter = statistics.mean(abs(a\
+    \ - b) for a, b in zip(samples, samples[1:])) if len(samples) > 1 else 0.0\n    return statistics.median(samples), jitter\n\n\ndef run_threads(worker, n):\n    start = time.perf_counter()\n    ts =\
+    \ [threading.Thread(target=worker, args=(i,)) for i in range(n)]\n    [x.start() for x in ts]\n    [x.join() for x in ts]\n    return time.perf_counter() - start\n\n\ndef measure_download(t):\n    NT\
+    \ = t.get(\"threads\", THREADS)\n    total = [0] * NT\n    errs = []\n    deadline = time.perf_counter() + t.get(\"duration\", DURATION)\n\n    def worker(i):\n        c = conn(t)\n        try:\n  \
+    \          while time.perf_counter() < deadline:\n                c.request(\"GET\", t[\"down\"](), headers=HDR)\n                r = c.getresponse()\n                if r.status == 429:\n         \
+    \           errs.append(\"HTTP 429\")\n                    if t[\"provider\"] == \"cloudflare\":\n                        try:\n                            CF_BLOCK[0] = time.time() + min(int(r.getheader(\"\
+    Retry-After\", \"1800\")), 7200)\n                        except Exception:\n                            CF_BLOCK[0] = time.time() + 1800\n                    r.read()\n                    return\n\
+    \                if r.status != 200:\n                    errs.append(\"HTTP %d\" % r.status)\n                    return\n                stop = False\n                while True:\n               \
+    \     if time.perf_counter() >= deadline:\n                        stop = True\n                        break\n                    b = r.read(65536)\n                    if not b:\n                \
+    \        break\n                    total[i] += len(b)\n                if stop:\n                    break\n        except Exception as e:\n            errs.append(str(e))\n        finally:\n     \
+    \       c.close()\n\n    elapsed = run_threads(worker, NT)\n    if sum(total) == 0:\n        raise RuntimeError(\"download sin datos: %s\" % (errs[0] if errs else \"?\"))\n    return sum(total) * 8\
+    \ / elapsed / 1e6\n\n\ndef measure_upload(t):\n    NT = t.get(\"threads\", THREADS)\n    total = [0] * NT\n    errs = []\n    body = t[\"up_prefix\"] + b\"0\" * 1_000_000\n    hdr = dict(HDR)\n    hdr[\"\
+    Content-Type\"] = t[\"up_ctype\"]\n    deadline = time.perf_counter() + t.get(\"duration\", DURATION)\n\n    def worker(i):\n        c = conn(t)\n        try:\n            while time.perf_counter()\
+    \ < deadline:\n                c.request(\"POST\", t[\"up_path\"], body=body, headers=hdr)\n                r = c.getresponse()\n                r.read()\n                if r.status == 429:\n     \
+    \               errs.append(\"HTTP 429\")\n                    if t[\"provider\"] == \"cloudflare\":\n                        try:\n                            CF_BLOCK[0] = time.time() + min(int(r.getheader(\"\
+    Retry-After\", \"1800\")), 7200)\n                        except Exception:\n                            CF_BLOCK[0] = time.time() + 1800\n                    r.read()\n                    return\n\
+    \                if r.status != 200:\n                    errs.append(\"HTTP %d\" % r.status)\n                    return\n                total[i] += len(body)\n        except Exception as e:\n   \
+    \         errs.append(str(e))\n        finally:\n            c.close()\n\n    elapsed = run_threads(worker, NT)\n    if sum(total) == 0:\n        raise RuntimeError(\"upload sin datos: %s\" % (errs[0]\
+    \ if errs else \"?\"))\n    return sum(total) * 8 / elapsed / 1e6\n\n\ndef run_target(provider, label, getter):\n    now = datetime.now(ART)\n    res = {\"ts\": now.strftime(\"%Y-%m-%d %H:%M:%S\"),\
+    \ \"epoch\": int(now.timestamp()),\n           \"provider\": provider, \"label\": label, \"ok\": False, \"server\": \"unknown\", \"name\": \"\",\n           \"ip\": \"\", \"download_mbps\": None, \"\
+    upload_mbps\": None, \"ping_ms\": None,\n           \"jitter_ms\": None, \"error\": \"\"}\n    try:\n        t = getter()\n        res[\"server\"] = t.get(\"server\", \"unknown\")\n        res[\"name\"\
+    ] = t.get(\"name\", \"\")\n        if t.get(\"trace\"):\n            res[\"server\"], res[\"ip\"] = get_trace(t)\n            res[\"name\"] = \"edge \" + res[\"server\"]\n        p, j = measure_latency(t)\n\
+    \        res[\"ping_ms\"], res[\"jitter_ms\"] = round(p, 2), round(j, 2)\n        res[\"download_mbps\"] = round(measure_download(t), 2)\n        res[\"upload_mbps\"] = round(measure_upload(t), 2)\n\
+    \        res[\"ok\"] = True\n    except Exception as e:\n        res[\"error\"] = str(e)[:300]\n        if provider == \"personal\":\n            ISP[\"at\"] = 0.0\n    return res\n\n\ndef push(res):\n\
+    \    if not VM_URL:\n        return\n    srv = re.sub(r\"[^A-Za-z0-9_.-]\", \"_\", res[\"server\"])\n    tags = \"speedtest,provider=%s,server=%s\" % (res[\"provider\"], srv)\n    if res[\"ok\"]:\n\
+    \        line = (\"%s ok=1,download_mbps=%.3f,upload_mbps=%.3f,ping_ms=%.3f,jitter_ms=%.3f\"\n                % (tags, res[\"download_mbps\"], res[\"upload_mbps\"], res[\"ping_ms\"], res[\"jitter_ms\"\
+    ]))\n    else:\n        line = \"%s ok=0\" % tags\n    req = urllib.request.Request(VM_URL, data=line.encode(), method=\"POST\")\n    urllib.request.urlopen(req, timeout=10).read()\n\n\ndef loop():\n\
+    \    while True:\n        t_start = time.time()\n        state[\"running\"] = True\n        state[\"started\"] = t_start\n        jobs = []\n        if t_start - LAST_CF[0] >= CF_INTERVAL - 30 and t_start\
+    \ >= CF_BLOCK[0]:\n            jobs.append((\"cloudflare\", \"Cloudflare\", cf_target))\n            LAST_CF[0] = t_start\n        if ISP_ENABLED:\n            jobs.append((\"personal\", \"Personal\"\
+    , get_isp_target))\n        for prov, label, getter in jobs:\n            res = run_target(prov, label, getter)\n            HISTORY.append(res)\n            state[\"last\"][prov] = res\n          \
+    \  try:\n                if not (prov == \"cloudflare\" and \"HTTP 429\" in res[\"error\"]):\n                    push(res)\n            except Exception as e:\n                print(\"push error:\"\
+    , e, flush=True)\n            print(json.dumps(res), flush=True)\n        state[\"running\"] = False\n        trigger.wait(max(5.0, INTERVAL - (time.time() - t_start)))\n        trigger.clear()\n\n\n\
+    def f(x, d=1):\n    return \"-\" if x is None else (\"%.*f\" % (d, x))\n\n\nCSS = (\"body{font-family:system-ui;background:#0f1115;color:#eee;max-width:820px;margin:2rem auto;padding:0 1rem}\"\n   \
+    \    \"h3{margin:1.5rem 0 .5rem}small{color:#999;font-weight:400}\"\n       \".g{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:.8rem}\"\n       \".c{background:#1a1d24;border-radius:10px;padding:.9rem;text-align:center}\"\
+    \n       \".c b{display:block;font-size:1.8rem}.c span{color:#999;font-size:.75rem}\"\n       \"table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:.85rem}\"\n       \"td,th{padding:.35rem;border-bottom:1px\
+    \ solid #2a2d36;text-align:right}\"\n       \"td:first-child,th:first-child,td:nth-child(2),th:nth-child(2){text-align:left}\"\n       \"button{background:#2d6cdf;color:#fff;border:0;border-radius:6px;padding:.5rem\
+    \ 1rem;cursor:pointer}\"\n       \"a{color:#7aa7ff}\")\n\n\ndef block(label, res):\n    if not res:\n        return \"<h3>\" + label + \"</h3><p>sin datos todavia...</p>\"\n    head = \"<h3>\" + label\
+    \ + \" <small>\" + html.escape(res.get(\"name\") or res.get(\"server\", \"\")) + \"</small></h3>\"\n    if not res[\"ok\"]:\n        return head + \"<p>Fallo: \" + html.escape(res[\"error\"]) + \"</p>\"\
+    \n    cells = \"\"\n    for k, lab in ((\"download_mbps\", \"Bajada Mbps\"), (\"upload_mbps\", \"Subida Mbps\"),\n                   (\"ping_ms\", \"Ping ms\"), (\"jitter_ms\", \"Jitter ms\")):\n  \
+    \      cells += \"<div class=c><b>\" + f(res[k]) + \"</b><span>\" + lab + \"</span></div>\"\n    return head + \"<div class=g>\" + cells + \"</div>\"\n\n\ndef page():\n    body = block(\"Cloudflare\"\
+    , state[\"last\"].get(\"cloudflare\"))\n    if ISP_ENABLED:\n        body += block(\"Personal\", state[\"last\"].get(\"personal\"))\n    rows = \"\"\n    for r in list(HISTORY)[::-1][:40]:\n       \
+    \ rows += (\"<tr><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\" % (\n            r[\"ts\"], r[\"label\"], f(r[\"download_mbps\"]), f(r[\"upload_mbps\"]), f(r[\"ping_ms\"]),\n\
+    \            f(r[\"jitter_ms\"]) if r[\"ok\"] else \"ERROR\"))\n    status = \"midiendo...\" if state[\"running\"] else \"cada %d min\" % (INTERVAL // 60)\n    return (\"<!doctype html><meta charset=utf-8><meta\
+    \ name=viewport content='width=device-width,initial-scale=1'>\"\n            \"<meta http-equiv=refresh content=30><title>Speedtest</title><style>\" + CSS + \"</style>\"\n            \"<h2>Internet\
+    \ speedtest <small>(\" + status + \")</small></h2>\" + body +\n            \"<form method=post action=/run style='margin-top:1rem'><button>Medir ahora</button></form>\"\n            \"<p><a href=/dashboard.json>dashboard.json</a></p>\"\
+    \n            \"<table><tr><th>Hora (ART)</th><th>Origen</th><th>Baj</th><th>Sub</th><th>Ping</th><th>Jitter</th></tr>\"\n            + rows + \"</table>\")\n\n\ndef metrics():\n    out = []\n    for\
+    \ prov, l in state[\"last\"].items():\n        lab = '{provider=\"%s\"}' % prov\n        out.append(\"speedtest_ok%s %d\" % (lab, 1 if l[\"ok\"] else 0))\n        out.append(\"speedtest_last_run_timestamp_seconds%s\
+    \ %d\" % (lab, l[\"epoch\"]))\n        if l[\"ok\"]:\n            for k in (\"download_mbps\", \"upload_mbps\", \"ping_ms\", \"jitter_ms\"):\n                out.append(\"speedtest_%s%s %s\" % (k, lab,\
+    \ l[k]))\n    return \"\\n\".join(out) + \"\\n\"\n\n\nDSV = {\"type\": \"prometheus\", \"uid\": \"${ds}\"}\nCOL = {\"Cloudflare\": \"#F6821F\", \"Personal\": \"#22D3EE\"}\nOV = [{\"matcher\": {\"id\"\
+    : \"byName\", \"options\": n},\n       \"properties\": [{\"id\": \"color\", \"value\": {\"mode\": \"fixed\", \"fixedColor\": c}}]} for n, c in COL.items()]\nRED = {\"calcs\": [\"lastNotNull\"], \"fields\"\
+    : \"\", \"values\": False}\n\n\ndef tg(tpl, instant=False):\n    out = []\n    for ref, prov, leg in ((\"A\", \"cloudflare\", \"Cloudflare\"), (\"B\", \"personal\", \"Personal\")):\n        d = {\"\
+    datasource\": DSV, \"expr\": \"avg(\" + tpl.replace(\"@P@\", prov) + \")\",\n             \"legendFormat\": leg, \"refId\": ref}\n        if instant:\n            d[\"instant\"] = True\n           \
+    \ d[\"range\"] = False\n        out.append(d)\n    return out\n\n\ndef panel(pid, ptype, title, x, y, w, h, targets, defaults, options, overrides=None):\n    return {\"id\": pid, \"type\": ptype, \"\
+    title\": title, \"datasource\": DSV,\n            \"gridPos\": {\"x\": x, \"y\": y, \"w\": w, \"h\": h}, \"targets\": targets,\n            \"fieldConfig\": {\"defaults\": defaults, \"overrides\": OV\
+    \ if overrides is None else overrides},\n            \"options\": options}\n\n\ndef dashboard(concrete=False):\n    fixed = {\"mode\": \"fixed\", \"fixedColor\": \"#888888\"}\n    stat_opts = {\"reduceOptions\"\
+    : RED, \"colorMode\": \"value\", \"graphMode\": \"area\",\n                 \"textMode\": \"value_and_name\", \"justifyMode\": \"center\", \"orientation\": \"vertical\"}\n\n    def gauge(pid, title,\
+    \ metric, prov, color, x):\n        return {\"id\": pid, \"type\": \"gauge\", \"title\": title, \"datasource\": DSV,\n                \"gridPos\": {\"x\": x, \"y\": 0, \"w\": 6, \"h\": 7},\n       \
+    \         \"targets\": [{\"datasource\": DSV,\n                             \"expr\": 'avg(last_over_time(%s{provider=\"%s\"}[6h]))' % (metric, prov),\n                             \"legendFormat\"\
+    : title, \"instant\": True, \"range\": False, \"refId\": \"A\"}],\n                \"fieldConfig\": {\"defaults\": {\"unit\": \"Mbits\", \"decimals\": 0, \"min\": 0, \"max\": 300,\n                \
+    \                             \"color\": {\"mode\": \"fixed\", \"fixedColor\": color}},\n                                \"overrides\": []},\n                \"options\": {\"reduceOptions\": RED, \"\
+    showThresholdMarkers\": False,\n                            \"showThresholdLabels\": False, \"orientation\": \"auto\"}}\n\n    def stat(pid, title, tpl, unit, x, y, w, h, inst=False):\n        return\
+    \ panel(pid, \"stat\", title, x, y, w, h, tg(tpl, inst),\n                     {\"unit\": unit, \"decimals\": 1, \"color\": fixed}, stat_opts)\n\n    def ts(pid, title, tpl, unit, x, y, w, h):\n   \
+    \     d = {\"unit\": unit, \"min\": 0, \"decimals\": 1, \"color\": fixed,\n             \"custom\": {\"lineWidth\": 2, \"fillOpacity\": 18, \"gradientMode\": \"opacity\",\n                        \"\
+    lineInterpolation\": \"smooth\", \"showPoints\": \"auto\", \"pointSize\": 5, \"spanNulls\": True}}\n        o = {\"legend\": {\"showLegend\": True, \"displayMode\": \"table\", \"placement\": \"bottom\"\
+    ,\n                        \"calcs\": [\"mean\", \"min\", \"max\", \"lastNotNull\"]},\n             \"tooltip\": {\"mode\": \"multi\", \"sort\": \"desc\"}}\n        return panel(pid, \"timeseries\"\
+    , title, x, y, w, h, tg(tpl), d, o)\n\n    def bar(pid, title, tpl, unit, x, y, w, h):\n        return panel(pid, \"bargauge\", title, x, y, w, h, tg(tpl, True),\n                     {\"unit\": unit,\
+    \ \"min\": 0, \"decimals\": 1, \"color\": fixed},\n                     {\"reduceOptions\": RED, \"orientation\": \"horizontal\", \"displayMode\": \"gradient\",\n                      \"showUnfilled\"\
+    : True, \"valueMode\": \"color\", \"namePlacement\": \"top\"})\n\n    avail = panel(9, \"state-timeline\", \"Disponibilidad de las mediciones (OK / FALLA)\", 0, 30, 24, 5,\n                  tg('speedtest_ok{provider=\"\
+    @P@\"}'),\n                  {\"color\": {\"mode\": \"thresholds\"},\n                   \"thresholds\": {\"mode\": \"absolute\", \"steps\": [{\"color\": \"red\", \"value\": None},\n               \
+    \                                                  {\"color\": \"green\", \"value\": 1}]},\n                   \"mappings\": [{\"type\": \"value\", \"options\": {\n                       \"1\": {\"\
+    text\": \"OK\", \"color\": \"green\", \"index\": 0},\n                       \"0\": {\"text\": \"FALLA\", \"color\": \"red\", \"index\": 1}}}]},\n                  {\"mergeValues\": True, \"showValue\"\
+    : \"never\", \"rowHeight\": 0.8, \"alignValue\": \"left\",\n                   \"legend\": {\"showLegend\": False}}, [])\n    panels = [\n        gauge(1, \"Cloudflare - Bajada\", \"speedtest_download_mbps\"\
+    , \"cloudflare\", \"#F6821F\", 0),\n        gauge(2, \"Cloudflare - Subida\", \"speedtest_upload_mbps\", \"cloudflare\", \"#F6821F\", 6),\n        gauge(3, \"Personal - Bajada\", \"speedtest_download_mbps\"\
+    , \"personal\", \"#22D3EE\", 12),\n        gauge(4, \"Personal - Subida\", \"speedtest_upload_mbps\", \"personal\", \"#22D3EE\", 18),\n        ts(5, \"Bajada\", 'speedtest_download_mbps{provider=\"\
+    @P@\"}', \"Mbits\", 0, 7, 12, 9),\n        ts(6, \"Subida\", 'speedtest_upload_mbps{provider=\"@P@\"}', \"Mbits\", 12, 7, 12, 9),\n        ts(7, \"Latencia (ping)\", 'speedtest_ping_ms{provider=\"@P@\"\
+    }', \"ms\", 0, 16, 12, 8),\n        ts(8, \"Jitter\", 'speedtest_jitter_ms{provider=\"@P@\"}', \"ms\", 12, 16, 12, 8),\n        bar(10, \"Bajada promedio del periodo\", 'avg_over_time(speedtest_download_mbps{provider=\"\
+    @P@\"}[$__range])',\n            \"Mbits\", 0, 24, 8, 6),\n        bar(11, \"Subida promedio del periodo\", 'avg_over_time(speedtest_upload_mbps{provider=\"@P@\"}[$__range])',\n            \"Mbits\"\
+    , 8, 24, 8, 6),\n        stat(12, \"Disponibilidad\", 'avg_over_time(speedtest_ok{provider=\"@P@\"}[$__range]) * 100',\n             \"percent\", 16, 24, 8, 6, True),\n        avail,\n    ]\n    tpl_vars\
+    \ = [{\"type\": \"datasource\", \"name\": \"ds\", \"label\": \"Datasource\", \"query\": \"prometheus\",\n                 \"current\": {}, \"hide\": 0, \"refresh\": 1, \"regex\": \"\"}]\n    if concrete:\n\
+    \        tpl_vars = []\n    return {\"uid\": \"speedtest-isp\", \"title\": \"Internet - Cloudflare vs Personal\", \"tags\": [\"speedtest\", \"internet\"],\n            \"timezone\": \"browser\", \"\
+    schemaVersion\": 39, \"version\": 1, \"refresh\": \"1m\", \"graphTooltip\": 1,\n            \"time\": {\"from\": \"now-24h\", \"to\": \"now\"}, \"annotations\": {\"list\": []},\n            \"templating\"\
+    : {\"list\": tpl_vars}, \"panels\": panels}\n\n\nclass H(BaseHTTPRequestHandler):\n    def log_message(self, *a):\n        pass\n\n    def send_body(self, body, ctype):\n        b = body.encode()\n\
+    \        self.send_response(200)\n        self.send_header(\"Content-Type\", ctype)\n        self.send_header(\"Content-Length\", str(len(b)))\n        self.end_headers()\n        self.wfile.write(b)\n\
+    \n    def do_GET(self):\n        p = self.path.split(\"?\")[0]\n        if p == \"/healthz\":\n            self.send_body(\"ok\", \"text/plain\")\n        elif p == \"/metrics\":\n            self.send_body(metrics(),\
+    \ \"text/plain; version=0.0.4\")\n        elif p == \"/api/history\":\n            self.send_body(json.dumps(list(HISTORY)), \"application/json\")\n        elif p == \"/dashboard.json\":\n         \
+    \   self.send_body(json.dumps(dashboard(), indent=1), \"application/json\")\n        elif p == \"/\":\n            self.send_body(page(), \"text/html; charset=utf-8\")\n        else:\n            self.send_response(404)\n\
+    \            self.end_headers()\n\n    def do_POST(self):\n        if self.path == \"/run\" and not state[\"running\"] and time.time() - state[\"started\"] > 60:\n            trigger.set()\n       \
+    \ self.send_response(303)\n        self.send_header(\"Location\", \"/\")\n        self.end_headers()\n\n\ndef grafana_import():\n    base = os.environ.get(\"GRAFANA_URL\", \"\").rstrip(\"/\")\n    user\
+    \ = os.environ.get(\"GRAFANA_USER\", \"admin\")\n    auth = \"Basic \" + base64.b64encode((\"%s:%s\" % (user, os.environ.get(\"GRAFANA_PASSWORD\", \"\"))).encode()).decode()\n\n    def api(method, path,\
+    \ data=None):\n        req = urllib.request.Request(base + path, method=method,\n                                     data=None if data is None else json.dumps(data).encode(),\n                    \
+    \                 headers={\"Authorization\": auth, \"Content-Type\": \"application/json\"})\n        return json.loads(urllib.request.urlopen(req, timeout=20).read())\n\n    try:\n        dss = api(\"\
+    GET\", \"/api/datasources\")\n        pick = None\n        for d in dss:\n            s = (d.get(\"name\", \"\") + \" \" + d.get(\"url\", \"\") + \" \" + d.get(\"type\", \"\")).lower()\n           \
+    \ if \"victoria\" in s:\n                pick = d\n                break\n        if pick is None:\n            pick = next((d for d in dss if d.get(\"type\") == \"prometheus\"), None)\n        if pick\
+    \ is None:\n            print(\"Grafana no tiene datasource Prometheus/VictoriaMetrics\")\n            sys.exit(3)\n        DSV[\"type\"], DSV[\"uid\"] = pick[\"type\"], pick[\"uid\"]\n        res =\
+    \ api(\"POST\", \"/api/dashboards/db\",\n                  {\"dashboard\": dashboard(True), \"overwrite\": True, \"message\": \"speedtest-isp\"})\n        print(\"OK datasource=%s dashboard=%s\" % (pick.get(\"\
+    name\"), res.get(\"url\")))\n    except urllib.error.HTTPError as e:\n        print(\"Grafana HTTP %d con usuario %s\" % (e.code, user))\n        sys.exit(2)\n    except Exception as e:\n        print(\"\
+    Grafana error:\", e)\n        sys.exit(2)\n\n\ndef cli_list(q):\n    found = {}\n    try:\n        url = \"https://www.speedtest.net/api/js/servers?engine=js&limit=30&search=\" + urllib.parse.quote(q)\n\
+    \        for s in json.loads(http_get(url)):\n            found[str(s[\"id\"])] = s\n    except Exception as e:\n        print(\"API error:\", e)\n    try:\n        for s in xml_servers():\n       \
+    \     found.setdefault(str(s.get(\"id\")), s)\n    except Exception as e:\n        print(\"XML error:\", e)\n    for s in found.values():\n        text = (s.get(\"sponsor\", \"\") + \" \" + s.get(\"\
+    name\", \"\")).lower()\n        if s.get(\"cc\", \"\").upper() == \"AR\" and q.lower() in text:\n            print(s.get(\"id\"), \"|\", s.get(\"sponsor\"), \"|\", s.get(\"name\"), \"|\", s.get(\"url\"\
+    ))\n\n\ndef cli_diag():\n    cands = candidates()\n    print(\"candidatos encontrados:\", len(cands))\n    for s in cands[:8]:\n        for u in url_variants(s):\n            t = ookla_target(dict(s,\
+    \ url=u))\n            try:\n                p, j = measure_latency(t, n=4)\n                r = \"OK ping %.1f ms jitter %.1f\" % (p, j)\n            except Exception as e:\n                r = \"\
+    ERROR %r\" % (e,)\n            print(s.get(\"id\"), \"|\", s.get(\"sponsor\"), \"|\", s.get(\"name\"), \"|\", u, \"|\", r)\n\n\nif __name__ == \"__main__\":\n    if len(sys.argv) > 1:\n        cmd =\
+    \ sys.argv[1]\n        if cmd == \"--list\":\n            cli_list(sys.argv[2] if len(sys.argv) > 2 else \"personal\")\n        elif cmd == \"--diag\":\n            cli_diag()\n        elif cmd == \"\
+    --grafana-import\":\n            grafana_import()\n        sys.exit(0)\n    threading.Thread(target=loop, daemon=True).start()\n    ThreadingHTTPServer((\"0.0.0.0\", PORT), H).serve_forever()\n"
+kind: ConfigMap
+metadata:
+  name: speedtest-app
+  namespace: speedtest

@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ollama
+  namespace: ai
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 0
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: ollama
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ollama
+    spec:
+      containers:
+      - env:
+        - name: OLLAMA_HOST
+          value: 0.0.0.0:11434
+        - name: OLLAMA_KEEP_ALIVE
+          value: '-1'
+        - name: OLLAMA_MAX_LOADED_MODELS
+          value: '2'
+        - name: OLLAMA_NUM_PARALLEL
+          value: '1'
+        image: ollama/ollama:latest
+        imagePullPolicy: Always
+        lifecycle:
+          postStart:
+            exec:
+              command:
+              - sh
+              - -c
+              - until ollama list >/dev/null 2>&1; do sleep 2; done; (ollama run qwen2.5:3b "" >/dev/null 2>&1 &)
+        name: ollama
+        ports:
+        - containerPort: 11434
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 11434
+          timeoutSeconds: 1
+        resources:
+          limits:
+            cpu: '2'
+            memory: 5Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /root/.ollama
+          name: data
+      dnsPolicy: ClusterFirst
+      priorityClassName: ai-low
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: ollama-data

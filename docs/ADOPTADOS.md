@@ -1,0 +1,1 @@
+- Retención de Velero: 7 días. ArgoCD ignora `.spec.replicas` de los Deployments (se puede apagar/encender apps a mano).

@@ -172,1729 +172,320 @@ data:
     de LocalStack activos","description":"","gridPos":{"x":8,"y":74,"w":4,"h":5},"targets":[{"refId":"A","expr":"sum(lab_localstack_service_running)","editorMode":"code","instant":true,"range":false}],"fieldConfig":{"defaults":{"color":{"mode":"fixed","fixedColor":"#22D3EE"}},"overrides":[]},"options":{"reduceOptions":{"values":false,"calcs":["lastNotNull"],"fields":""},"orientation":"auto","textMode":"auto","colorMode":"value","graphMode":"none","justifyMode":"auto","wideLayout":true,"showPercentChange":false},"transparent":true},{"id":46,"type":"stat","title":"Contenedores
     corriendo","description":"","gridPos":{"x":12,"y":74,"w":4,"h":5},"targets":[{"refId":"A","expr":"sum(lab_docker_container_running)","editorMode":"code","instant":true,"range":false}],"fieldConfig":{"defaults":{"color":{"mode":"fixed","fixedColor":"#22D3EE"}},"overrides":[]},"options":{"reduceOptions":{"values":false,"calcs":["lastNotNull"],"fields":""},"orientation":"auto","textMode":"auto","colorMode":"value","graphMode":"none","justifyMode":"auto","wideLayout":true,"showPercentChange":false},"transparent":true},{"id":47,"type":"timeseries","title":"CPU
     de contenedores Docker","description":"","gridPos":{"x":16,"y":74,"w":8,"h":5},"targets":[{"refId":"A","expr":"lab_docker_container_cpu_percent","editorMode":"code","legendFormat":"{{name}}"}],"fieldConfig":{"defaults":{"unit":"percent","min":0,"color":{"mode":"palette-classic-by-name"},"custom":{"drawStyle":"line","lineInterpolation":"smooth","lineWidth":2,"fillOpacity":22,"gradientMode":"opacity","showPoints":"never","spanNulls":true,"axisBorderShow":false,"axisPlacement":"auto","barAlignment":0,"stacking":{"mode":"none","group":"A"},"thresholdsStyle":{"mode":"off"}}},"overrides":[]},"options":{"legend":{"showLegend":true,"displayMode":"list","placement":"bottom","calcs":[]},"tooltip":{"mode":"multi","sort":"desc"}}}]}'
-  servidor.json: |
-    {
-     "uid": "lab-servidor",
-     "title": "Servidor (sparky)",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "stat",
-       "title": "CPU %",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percent"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "100*(1-avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "stat",
-       "title": "iowait %",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percent"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "100*avg(rate(node_cpu_seconds_total{mode=\"iowait\"}[5m]))",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "stat",
-       "title": "Memoria usada",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percentunit"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "1-node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "stat",
-       "title": "Uptime",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 18,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "s"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "time()-node_boot_time_seconds",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "CPU por modo",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percent"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "100*avg by(mode)(rate(node_cpu_seconds_total{mode!=\"idle\"}[5m]))",
-         "legendFormat": "{{mode}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Memoria",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes",
-         "legendFormat": "usada",
-         "refId": "A"
-        },
-        {
-         "expr": "node_memory_Cached_bytes",
-         "legendFormat": "cache",
-         "refId": "B"
-        },
-        {
-         "expr": "node_memory_MemTotal_bytes",
-         "legendFormat": "total",
-         "refId": "C"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Load average",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "node_load1",
-         "legendFormat": "1m",
-         "refId": "A"
-        },
-        {
-         "expr": "node_load5",
-         "legendFormat": "5m",
-         "refId": "B"
-        },
-        {
-         "expr": "node_load15",
-         "legendFormat": "15m",
-         "refId": "C"
-        }
-       ]
-      },
-      {
-       "id": 8,
-       "type": "timeseries",
-       "title": "Presión PSI (tiempo detenido)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percentunit"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "rate(node_pressure_io_stalled_seconds_total[5m])",
-         "legendFormat": "io",
-         "refId": "A"
-        },
-        {
-         "expr": "rate(node_pressure_memory_stalled_seconds_total[5m])",
-         "legendFormat": "memoria",
-         "refId": "B"
-        },
-        {
-         "expr": "rate(node_pressure_cpu_waiting_seconds_total[5m])",
-         "legendFormat": "cpu espera",
-         "refId": "C"
-        }
-       ]
-      },
-      {
-       "id": 9,
-       "type": "timeseries",
-       "title": "Disco ocupado (util)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percentunit"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "rate(node_disk_io_time_seconds_total{device=~\"sd[a-d]\"}[5m])",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 10,
-       "type": "timeseries",
-       "title": "Throughput de disco",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "Bps"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "rate(node_disk_read_bytes_total{device=~\"sd[a-d]\"}[5m])",
-         "legendFormat": "lee {{device}}",
-         "refId": "A"
-        },
-        {
-         "expr": "rate(node_disk_written_bytes_total{device=~\"sd[a-d]\"}[5m])",
-         "legendFormat": "escribe {{device}}",
-         "refId": "B"
-        }
-       ]
-      },
-      {
-       "id": 11,
-       "type": "timeseries",
-       "title": "Espacio libre",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "node_filesystem_avail_bytes{mountpoint=~\"/|/mnt/media[234]\"}",
-         "legendFormat": "{{mountpoint}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 12,
-       "type": "timeseries",
-       "title": "Red",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "Bps"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(rate(node_network_receive_bytes_total{device!~\"lo|veth.*|cni.*|flannel.*|docker.*|br-.*\"}[5m]))",
-         "legendFormat": "entrada",
-         "refId": "A"
-        },
-        {
-         "expr": "sum(rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|cni.*|flannel.*|docker.*|br-.*\"}[5m]))",
-         "legendFormat": "salida",
-         "refId": "B"
-        }
-       ]
-      },
-      {
-       "id": 13,
-       "type": "timeseries",
-       "title": "Temperatura",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 36,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "celsius"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "node_hwmon_temp_celsius",
-         "legendFormat": "{{chip}} {{sensor}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
-  discos.json: |
-    {
-     "uid": "lab-discos",
-     "title": "Discos y SMART",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "stat",
-       "title": "SMART OK (1=sí)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "min(lab_smart_passed)",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "stat",
-       "title": "Sectores pendientes (máx)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max(lab_smart_attribute_raw{name=\"current_pending_sector\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "stat",
-       "title": "Sectores reasignados (máx)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max(lab_smart_attribute_raw{name=\"reallocated_sector_ct\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "stat",
-       "title": "Temp. máx disco",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 18,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "celsius"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max(lab_smart_attribute_raw{name=\"temperature_celsius\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "Sectores pendientes",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_smart_attribute_raw{name=\"current_pending_sector\"}",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Errores CRC (cable SATA)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_smart_attribute_raw{name=\"udma_crc_error_count\"}",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Temperatura",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "celsius"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_smart_attribute_raw{name=\"temperature_celsius\"}",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 8,
-       "type": "timeseries",
-       "title": "Horas encendido",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "h"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_smart_attribute_raw{name=\"power_on_hours\"}",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 9,
-       "type": "timeseries",
-       "title": "Latencia aprox. (io_time por IO)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "s"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "rate(node_disk_io_time_weighted_seconds_total{device=~\"sd[a-d]\"}[5m])",
-         "legendFormat": "{{device}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
-  k3s.json: |
-    {
-     "uid": "lab-k3s",
-     "title": "k3s y pods",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "stat",
-       "title": "Pods Running",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "stat",
-       "title": "Pods con problema",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(kube_pod_status_phase{phase=~\"Pending|Failed|Unknown\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "stat",
-       "title": "Reinicios (1h)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(increase(kube_pod_container_status_restarts_total[1h]))",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "stat",
-       "title": "Nodos Ready",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 18,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(kube_node_status_condition{condition=\"Ready\",status=\"true\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "CPU por namespace",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(namespace)(rate(container_cpu_usage_seconds_total{container!=\"\"}[5m]))",
-         "legendFormat": "{{namespace}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Memoria por namespace",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(namespace)(container_memory_working_set_bytes{container!=\"\"})",
-         "legendFormat": "{{namespace}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Top 15 pods por memoria",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "topk(15,max by(namespace,pod)(container_memory_working_set_bytes{container!=\"\"}))",
-         "legendFormat": "{{namespace}}/{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 8,
-       "type": "timeseries",
-       "title": "Top 15 pods por CPU",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "topk(15,sum by(namespace,pod)(rate(container_cpu_usage_seconds_total{container!=\"\"}[5m])))",
-         "legendFormat": "{{namespace}}/{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 9,
-       "type": "timeseries",
-       "title": "Reinicios por pod (1h)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "increase(kube_pod_container_status_restarts_total[1h]) > 0",
-         "legendFormat": "{{namespace}}/{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 10,
-       "type": "timeseries",
-       "title": "Uso de volúmenes (PVC)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "kubelet_volume_stats_used_bytes",
-         "legendFormat": "{{namespace}}/{{persistentvolumeclaim}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 11,
-       "type": "timeseries",
-       "title": "API server: peticiones/s",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(code)(rate(apiserver_request_total[5m]))",
-         "legendFormat": "{{code}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
-  media.json: |
-    {
-     "uid": "lab-media",
-     "title": "Media (Jellyfin y *arr)",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "timeseries",
-       "title": "CPU por pod",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(pod)(rate(container_cpu_usage_seconds_total{namespace=\"media\",container!=\"\"}[5m]))",
-         "legendFormat": "{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "timeseries",
-       "title": "Memoria por pod",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max by(pod)(container_memory_working_set_bytes{namespace=\"media\",container!=\"\"})",
-         "legendFormat": "{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "timeseries",
-       "title": "Red recibida por pod",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 8,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "Bps"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(pod)(rate(container_network_receive_bytes_total{namespace=\"media\"}[5m]))",
-         "legendFormat": "{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "timeseries",
-       "title": "Red enviada por pod (streaming)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 8,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "Bps"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(pod)(rate(container_network_transmit_bytes_total{namespace=\"media\"}[5m]))",
-         "legendFormat": "{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "Peticiones web a Jellyfin",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 16,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(code)(rate(traefik_service_requests_total{service=~\".*jellyfin.*\"}[5m]))",
-         "legendFormat": "{{code}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Presión de I/O (afecta a Jellyfin)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 16,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percentunit"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "rate(node_pressure_io_stalled_seconds_total[5m])",
-         "legendFormat": "io",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Espacio libre media",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 24,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "node_filesystem_avail_bytes{mountpoint=~\"/mnt/media[234]\"}",
-         "legendFormat": "{{mountpoint}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
-  plataforma.json: |
-    {
-     "uid": "lab-plataforma",
-     "title": "Plataforma (ArgoCD, certs, Traefik, backups)",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "stat",
-       "title": "Apps ArgoCD fuera de Git",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "count(argocd_app_info{sync_status!=\"Synced\"}) or vector(0)",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "stat",
-       "title": "Apps no Healthy",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "count(argocd_app_info{health_status!=\"Healthy\"}) or vector(0)",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "stat",
-       "title": "Cert. que vence antes (días)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "d"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "min(certmanager_certificate_expiration_timestamp_seconds-time())/86400",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "stat",
-       "title": "Último backup (horas)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 18,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "h"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "(time()-max(velero_backup_last_successful_timestamp{schedule=\"daily\"}))/3600",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "Estado de apps ArgoCD",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "argocd_app_info",
-         "legendFormat": "{{name}} {{sync_status}}/{{health_status}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Vencimiento de certificados (días)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "d"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "(certmanager_certificate_expiration_timestamp_seconds-time())/86400",
-         "legendFormat": "{{namespace}}/{{name}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Peticiones Traefik por código",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(code)(rate(traefik_service_requests_total[5m]))",
-         "legendFormat": "{{code}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 8,
-       "type": "timeseries",
-       "title": "Peticiones por servicio",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "topk(10,sum by(service)(rate(traefik_service_requests_total[5m])))",
-         "legendFormat": "{{service}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 9,
-       "type": "timeseries",
-       "title": "MinIO: uso por bucket",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "minio_bucket_usage_total_bytes",
-         "legendFormat": "{{bucket}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 10,
-       "type": "timeseries",
-       "title": "MinIO: espacio libre",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "minio_cluster_capacity_usable_free_bytes",
-         "legendFormat": "libre",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 11,
-       "type": "timeseries",
-       "title": "Backups Velero: edad del último exitoso",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "s"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "time()-velero_backup_last_successful_timestamp",
-         "legendFormat": "{{schedule}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 12,
-       "type": "timeseries",
-       "title": "Backups Velero: fallos",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "velero_backup_failure_total",
-         "legendFormat": "{{schedule}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
-  host.json: |
-    {
-     "uid": "lab-host",
-     "title": "Host, Docker y Guacamole",
-     "schemaVersion": 39,
-     "version": 1,
-     "editable": true,
-     "tags": [
-      "lab"
-     ],
-     "time": {
-      "from": "now-6h",
-      "to": "now"
-     },
-     "refresh": "1m",
-     "panels": [
-      {
-       "id": 1,
-       "type": "stat",
-       "title": "Paquetes pendientes (apt)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(lab_pending_updates{source=\"apt\"})",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 2,
-       "type": "stat",
-       "title": "Reinicio requerido",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 6,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max(lab_reboot_required)",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 3,
-       "type": "stat",
-       "title": "Servicios systemd fallidos",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max(lab_systemd_failed_units)",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 4,
-       "type": "stat",
-       "title": "Última actualización (h)",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 18,
-        "y": 0,
-        "w": 6,
-        "h": 4
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "h"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "(time()-lab_updn_last_success_timestamp_seconds)/3600",
-         "legendFormat": "",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 5,
-       "type": "timeseries",
-       "title": "Paquetes pendientes por fuente",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_pending_updates",
-         "legendFormat": "{{source}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 6,
-       "type": "timeseries",
-       "title": "Docker: CPU por contenedor",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 4,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "percent"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_docker_container_cpu_percent",
-         "legendFormat": "{{name}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 7,
-       "type": "timeseries",
-       "title": "Docker: memoria por contenedor",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "lab_docker_container_memory_bytes",
-         "legendFormat": "{{name}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 8,
-       "type": "timeseries",
-       "title": "LocalStack: servicios activos",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 12,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum(lab_localstack_service_running)",
-         "legendFormat": "running",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 9,
-       "type": "timeseries",
-       "title": "Guacamole: CPU y memoria",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(pod)(rate(container_cpu_usage_seconds_total{namespace=\"guacamole\",container!=\"\"}[5m]))",
-         "legendFormat": "cpu {{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 10,
-       "type": "timeseries",
-       "title": "Guacamole: memoria",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 12,
-        "y": 20,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "bytes"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "max by(pod)(container_memory_working_set_bytes{namespace=\"guacamole\",container!=\"\"})",
-         "legendFormat": "{{pod}}",
-         "refId": "A"
-        }
-       ]
-      },
-      {
-       "id": 11,
-       "type": "timeseries",
-       "title": "Guacamole: peticiones web",
-       "datasource": "VictoriaMetrics",
-       "gridPos": {
-        "x": 0,
-        "y": 28,
-        "w": 12,
-        "h": 8
-       },
-       "fieldConfig": {
-        "defaults": {
-         "unit": "short"
-        },
-        "overrides": []
-       },
-       "targets": [
-        {
-         "expr": "sum by(code)(rate(traefik_service_requests_total{service=~\".*guacamole.*\"}[5m]))",
-         "legendFormat": "{{code}}",
-         "refId": "A"
-        }
-       ]
-      }
-     ]
-    }
+  servidor.json: "{\n \"uid\": \"lab-servidor\",\n \"title\": \"Servidor (sparky)\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\n ],\n \"time\": {\n  \"from\"\
+    : \"now-6h\",\n  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"stat\",\n   \"title\": \"CPU %\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\"\
+    : {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percent\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n\
+    \    {\n     \"expr\": \"100*(1-avg(rate(node_cpu_seconds_total{mode=\\\"idle\\\"}[5m])))\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\"\
+    : \"stat\",\n   \"title\": \"iowait %\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 6,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"\
+    defaults\": {\n     \"unit\": \"percent\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"100*avg(rate(node_cpu_seconds_total{mode=\\\"iowait\\\"}[5m]))\",\n     \"\
+    legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"type\": \"stat\",\n   \"title\": \"Memoria usada\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\"\
+    : {\n    \"x\": 12,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percentunit\"\n    },\n    \"overrides\": []\n   },\n   \"targets\"\
+    : [\n    {\n     \"expr\": \"1-node_memory_MemAvailable_bytes/node_memory_MemTotal_bytes\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\":\
+    \ \"stat\",\n   \"title\": \"Uptime\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\"\
+    : {\n     \"unit\": \"s\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"time()-node_boot_time_seconds\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n  \
+    \  }\n   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"CPU por modo\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 4,\n    \"\
+    w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percent\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"100*avg by(mode)(rate(node_cpu_seconds_total{mode!=\\\
+    \"idle\\\"}[5m]))\",\n     \"legendFormat\": \"{{mode}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Memoria\",\n   \"datasource\"\
+    : \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\"\
+    : []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes\",\n     \"legendFormat\": \"usada\",\n     \"refId\": \"A\"\n    },\n    {\n     \"\
+    expr\": \"node_memory_Cached_bytes\",\n     \"legendFormat\": \"cache\",\n     \"refId\": \"B\"\n    },\n    {\n     \"expr\": \"node_memory_MemTotal_bytes\",\n     \"legendFormat\": \"total\",\n  \
+    \   \"refId\": \"C\"\n    }\n   ]\n  },\n  {\n   \"id\": 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Load average\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n\
+    \    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\"\
+    : \"node_load1\",\n     \"legendFormat\": \"1m\",\n     \"refId\": \"A\"\n    },\n    {\n     \"expr\": \"node_load5\",\n     \"legendFormat\": \"5m\",\n     \"refId\": \"B\"\n    },\n    {\n     \"\
+    expr\": \"node_load15\",\n     \"legendFormat\": \"15m\",\n     \"refId\": \"C\"\n    }\n   ]\n  },\n  {\n   \"id\": 8,\n   \"type\": \"timeseries\",\n   \"title\": \"Presión PSI (tiempo detenido)\"\
+    ,\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percentunit\"\
+    \n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"rate(node_pressure_io_stalled_seconds_total[5m])\",\n     \"legendFormat\": \"io\",\n     \"refId\": \"A\"\n    },\n\
+    \    {\n     \"expr\": \"rate(node_pressure_memory_stalled_seconds_total[5m])\",\n     \"legendFormat\": \"memoria\",\n     \"refId\": \"B\"\n    },\n    {\n     \"expr\": \"rate(node_pressure_cpu_waiting_seconds_total[5m])\"\
+    ,\n     \"legendFormat\": \"cpu espera\",\n     \"refId\": \"C\"\n    }\n   ]\n  },\n  {\n   \"id\": 9,\n   \"type\": \"timeseries\",\n   \"title\": \"Disco ocupado (util)\",\n   \"datasource\": \"\
+    VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percentunit\"\n    },\n    \"\
+    overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"rate(node_disk_io_time_seconds_total{device=~\\\"sd[a-d]\\\"}[5m])\",\n     \"legendFormat\": \"{{device}}\",\n     \"refId\": \"A\"\
+    \n    }\n   ]\n  },\n  {\n   \"id\": 10,\n   \"type\": \"timeseries\",\n   \"title\": \"Throughput de disco\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\"\
+    : 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Bps\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"rate(node_disk_read_bytes_total{device=~\\\
+    \"sd[a-d]\\\"}[5m])\",\n     \"legendFormat\": \"lee {{device}}\",\n     \"refId\": \"A\"\n    },\n    {\n     \"expr\": \"rate(node_disk_written_bytes_total{device=~\\\"sd[a-d]\\\"}[5m])\",\n     \"\
+    legendFormat\": \"escribe {{device}}\",\n     \"refId\": \"B\"\n    }\n   ]\n  },\n  {\n   \"id\": 11,\n   \"type\": \"timeseries\",\n   \"title\": \"Espacio libre\",\n   \"datasource\": \"VictoriaMetrics\"\
+    ,\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n\
+    \   \"targets\": [\n    {\n     \"expr\": \"node_filesystem_avail_bytes{mountpoint=~\\\"/|/mnt/media[234]\\\"}\",\n     \"legendFormat\": \"{{mountpoint}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n\
+    \  {\n   \"id\": 12,\n   \"type\": \"timeseries\",\n   \"title\": \"Red\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n\
+    \   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Bps\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum(rate(node_network_receive_bytes_total{device!~\\\
+    \"lo|veth.*|cni.*|flannel.*|docker.*|br-.*\\\"}[5m]))\",\n     \"legendFormat\": \"entrada\",\n     \"refId\": \"A\"\n    },\n    {\n     \"expr\": \"sum(rate(node_network_transmit_bytes_total{device!~\\\
+    \"lo|veth.*|cni.*|flannel.*|docker.*|br-.*\\\"}[5m]))\",\n     \"legendFormat\": \"salida\",\n     \"refId\": \"B\"\n    }\n   ]\n  },\n  {\n   \"id\": 13,\n   \"type\": \"timeseries\",\n   \"title\"\
+    : \"Temperatura\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 36,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"\
+    unit\": \"celsius\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"node_hwmon_temp_celsius\",\n     \"legendFormat\": \"{{chip}} {{sensor}}\",\n     \"refId\": \"\
+    A\"\n    }\n   ]\n  }\n ]\n}\n"
+  discos.json: "{\n \"uid\": \"lab-discos\",\n \"title\": \"Discos y SMART\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\n ],\n \"time\": {\n  \"from\": \"\
+    now-6h\",\n  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"stat\",\n   \"title\": \"SMART OK (1=sí)\",\n   \"datasource\": \"VictoriaMetrics\",\n  \
+    \ \"gridPos\": {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"\
+    targets\": [\n    {\n     \"expr\": \"min(lab_smart_passed)\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\": \"stat\",\n   \"title\": \"Sectores\
+    \ pendientes (máx)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 6,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n    \
+    \ \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"max(lab_smart_attribute_raw{name=\\\"current_pending_sector\\\"})\",\n     \"legendFormat\": \"\
+    \",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"type\": \"stat\",\n   \"title\": \"Sectores reasignados (máx)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n\
+    \    \"x\": 12,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n  \
+    \  {\n     \"expr\": \"max(lab_smart_attribute_raw{name=\\\"reallocated_sector_ct\\\"})\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\": \"\
+    stat\",\n   \"title\": \"Temp. máx disco\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n  \
+    \  \"defaults\": {\n     \"unit\": \"celsius\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"max(lab_smart_attribute_raw{name=\\\"temperature_celsius\\\"})\",\n \
+    \    \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"Sectores pendientes\",\n   \"datasource\": \"VictoriaMetrics\"\
+    ,\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n\
+    \   \"targets\": [\n    {\n     \"expr\": \"lab_smart_attribute_raw{name=\\\"current_pending_sector\\\"}\",\n     \"legendFormat\": \"{{device}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n \
+    \  \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Errores CRC (cable SATA)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 4,\n    \"w\": 12,\n\
+    \    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_smart_attribute_raw{name=\\\
+    \"udma_crc_error_count\\\"}\",\n     \"legendFormat\": \"{{device}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Temperatura\",\n \
+    \  \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"celsius\"\
+    \n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_smart_attribute_raw{name=\\\"temperature_celsius\\\"}\",\n     \"legendFormat\": \"{{device}}\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 8,\n   \"type\": \"timeseries\",\n   \"title\": \"Horas encendido\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\"\
+    : 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"h\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_smart_attribute_raw{name=\\\
+    \"power_on_hours\\\"}\",\n     \"legendFormat\": \"{{device}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 9,\n   \"type\": \"timeseries\",\n   \"title\": \"Latencia aprox. (io_time\
+    \ por IO)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\"\
+    : \"s\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"rate(node_disk_io_time_weighted_seconds_total{device=~\\\"sd[a-d]\\\"}[5m])\",\n     \"legendFormat\": \"{{device}}\"\
+    ,\n     \"refId\": \"A\"\n    }\n   ]\n  }\n ]\n}\n"
+  k3s.json: "{\n \"uid\": \"lab-k3s\",\n \"title\": \"k3s y pods\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\n ],\n \"time\": {\n  \"from\": \"now-6h\",\n\
+    \  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"stat\",\n   \"title\": \"Pods Running\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\":\
+    \ {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n\
+    \    {\n     \"expr\": \"sum(kube_pod_status_phase{phase=\\\"Running\\\"})\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\": \"stat\",\n  \
+    \ \"title\": \"Pods con problema\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 6,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\"\
+    : {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum(kube_pod_status_phase{phase=~\\\"Pending|Failed|Unknown\\\"})\",\n     \"legendFormat\"\
+    : \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"type\": \"stat\",\n   \"title\": \"Reinicios (1h)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\"\
+    : 12,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"\
+    expr\": \"sum(increase(kube_pod_container_status_restarts_total[1h]))\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\": \"stat\",\n   \"title\"\
+    : \"Nodos Ready\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"\
+    unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum(kube_node_status_condition{condition=\\\"Ready\\\",status=\\\"true\\\"})\",\n     \"legendFormat\"\
+    : \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"CPU por namespace\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n\
+    \    \"x\": 0,\n    \"y\": 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n  \
+    \  {\n     \"expr\": \"sum by(namespace)(rate(container_cpu_usage_seconds_total{container!=\\\"\\\"}[5m]))\",\n     \"legendFormat\": \"{{namespace}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n \
+    \ {\n   \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Memoria por namespace\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 4,\n    \"w\": 12,\n\
+    \    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(namespace)(container_memory_working_set_bytes{container!=\\\
+    \"\\\"})\",\n     \"legendFormat\": \"{{namespace}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Top 15 pods por memoria\",\n   \"\
+    datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n\
+    \    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"topk(15,max by(namespace,pod)(container_memory_working_set_bytes{container!=\\\"\\\"}))\",\n     \"legendFormat\": \"{{namespace}}/{{pod}}\"\
+    ,\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 8,\n   \"type\": \"timeseries\",\n   \"title\": \"Top 15 pods por CPU\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n  \
+    \  \"x\": 12,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n  \
+    \  {\n     \"expr\": \"topk(15,sum by(namespace,pod)(rate(container_cpu_usage_seconds_total{container!=\\\"\\\"}[5m])))\",\n     \"legendFormat\": \"{{namespace}}/{{pod}}\",\n     \"refId\": \"A\"\n\
+    \    }\n   ]\n  },\n  {\n   \"id\": 9,\n   \"type\": \"timeseries\",\n   \"title\": \"Reinicios por pod (1h)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\"\
+    : 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"increase(kube_pod_container_status_restarts_total[1h])\
+    \ > 0\",\n     \"legendFormat\": \"{{namespace}}/{{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 10,\n   \"type\": \"timeseries\",\n   \"title\": \"Uso de volúmenes (PVC)\",\n\
+    \   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\
+    \n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"kubelet_volume_stats_used_bytes\",\n     \"legendFormat\": \"{{namespace}}/{{persistentvolumeclaim}}\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 11,\n   \"type\": \"timeseries\",\n   \"title\": \"API server: peticiones/s\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n\
+    \    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\"\
+    : \"sum by(code)(rate(apiserver_request_total[5m]))\",\n     \"legendFormat\": \"{{code}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  }\n ]\n}\n"
+  media.json: "{\n \"uid\": \"lab-media\",\n \"title\": \"Media (Jellyfin y *arr)\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\n ],\n \"time\": {\n  \"from\"\
+    : \"now-6h\",\n  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"timeseries\",\n   \"title\": \"CPU por pod\",\n   \"datasource\": \"VictoriaMetrics\"\
+    ,\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n\
+    \   \"targets\": [\n    {\n     \"expr\": \"sum by(pod)(rate(container_cpu_usage_seconds_total{namespace=\\\"media\\\",container!=\\\"\\\"}[5m]))\",\n     \"legendFormat\": \"{{pod}}\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\": \"timeseries\",\n   \"title\": \"Memoria por pod\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\"\
+    : 0,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"max\
+    \ by(pod)(container_memory_working_set_bytes{namespace=\\\"media\\\",container!=\\\"\\\"})\",\n     \"legendFormat\": \"{{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"\
+    type\": \"timeseries\",\n   \"title\": \"Red recibida por pod\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 8,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"\
+    fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Bps\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(pod)(rate(container_network_receive_bytes_total{namespace=\\\
+    \"media\\\"}[5m]))\",\n     \"legendFormat\": \"{{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\": \"timeseries\",\n   \"title\": \"Red enviada por pod (streaming)\"\
+    ,\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 8,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Bps\"\n\
+    \    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(pod)(rate(container_network_transmit_bytes_total{namespace=\\\"media\\\"}[5m]))\",\n     \"legendFormat\": \"\
+    {{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"Peticiones web a Jellyfin\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\"\
+    : {\n    \"x\": 0,\n    \"y\": 16,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n\
+    \    {\n     \"expr\": \"sum by(code)(rate(traefik_service_requests_total{service=~\\\".*jellyfin.*\\\"}[5m]))\",\n     \"legendFormat\": \"{{code}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n\
+    \   \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Presión de I/O (afecta a Jellyfin)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 16,\n    \"\
+    w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percentunit\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"rate(node_pressure_io_stalled_seconds_total[5m])\"\
+    ,\n     \"legendFormat\": \"io\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Espacio libre media\",\n   \"datasource\": \"VictoriaMetrics\"\
+    ,\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 24,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n\
+    \   \"targets\": [\n    {\n     \"expr\": \"node_filesystem_avail_bytes{mountpoint=~\\\"/mnt/media[234]\\\"}\",\n     \"legendFormat\": \"{{mountpoint}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  }\n\
+    \ ]\n}\n"
+  plataforma.json: "{\n \"uid\": \"lab-plataforma\",\n \"title\": \"Plataforma (ArgoCD, certs, Traefik, backups)\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\
+    \n ],\n \"time\": {\n  \"from\": \"now-6h\",\n  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"stat\",\n   \"title\": \"Apps ArgoCD fuera de Git\",\n\
+    \   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n\
+    \    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"count(argocd_app_info{sync_status!=\\\"Synced\\\"}) or vector(0)\",\n     \"legendFormat\": \"\",\n     \"refId\": \"\
+    A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\": \"stat\",\n   \"title\": \"Apps no Healthy\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 6,\n    \"y\": 0,\n   \
+    \ \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"count(argocd_app_info{health_status!=\\\
+    \"Healthy\\\"}) or vector(0)\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"type\": \"stat\",\n   \"title\": \"Cert. que vence antes (días)\",\n\
+    \   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"d\"\n   \
+    \ },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"min(certmanager_certificate_expiration_timestamp_seconds-time())/86400\",\n     \"legendFormat\": \"\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\": \"stat\",\n   \"title\": \"Último backup (horas)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\"\
+    : 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"h\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"(time()-max(velero_backup_last_successful_timestamp{schedule=\\\
+    \"daily\\\"}))/3600\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"Estado de apps ArgoCD\",\n   \"datasource\"\
+    : \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\"\
+    : []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"argocd_app_info\",\n     \"legendFormat\": \"{{name}} {{sync_status}}/{{health_status}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n  \
+    \ \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Vencimiento de certificados (días)\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 4,\n    \"w\"\
+    : 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"d\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"(certmanager_certificate_expiration_timestamp_seconds-time())/86400\"\
+    ,\n     \"legendFormat\": \"{{namespace}}/{{name}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Peticiones Traefik por código\",\n\
+    \   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n\
+    \    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(code)(rate(traefik_service_requests_total[5m]))\",\n     \"legendFormat\": \"{{code}}\",\n     \"refId\": \"\
+    A\"\n    }\n   ]\n  },\n  {\n   \"id\": 8,\n   \"type\": \"timeseries\",\n   \"title\": \"Peticiones por servicio\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n   \
+    \ \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\"\
+    : \"topk(10,sum by(service)(rate(traefik_service_requests_total[5m])))\",\n     \"legendFormat\": \"{{service}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 9,\n   \"type\": \"timeseries\"\
+    ,\n   \"title\": \"MinIO: uso por bucket\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n \
+    \   \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"minio_bucket_usage_total_bytes\",\n     \"legendFormat\": \"{{bucket}}\"\
+    ,\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 10,\n   \"type\": \"timeseries\",\n   \"title\": \"MinIO: espacio libre\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n\
+    \    \"x\": 12,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n\
+    \    {\n     \"expr\": \"minio_cluster_capacity_usable_free_bytes\",\n     \"legendFormat\": \"libre\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 11,\n   \"type\": \"timeseries\",\n\
+    \   \"title\": \"Backups Velero: edad del último exitoso\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\"\
+    : {\n    \"defaults\": {\n     \"unit\": \"s\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"time()-velero_backup_last_successful_timestamp\",\n     \"legendFormat\"\
+    : \"{{schedule}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 12,\n   \"type\": \"timeseries\",\n   \"title\": \"Backups Velero: fallos\",\n   \"datasource\": \"VictoriaMetrics\",\n\
+    \   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n\
+    \   \"targets\": [\n    {\n     \"expr\": \"velero_backup_failure_total\",\n     \"legendFormat\": \"{{schedule}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  }\n ]\n}\n"
+  host.json: "{\n \"uid\": \"lab-host\",\n \"title\": \"Host, Docker y Guacamole\",\n \"schemaVersion\": 39,\n \"version\": 1,\n \"editable\": true,\n \"tags\": [\n  \"lab\"\n ],\n \"time\": {\n  \"from\"\
+    : \"now-6h\",\n  \"to\": \"now\"\n },\n \"refresh\": \"1m\",\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"stat\",\n   \"title\": \"Paquetes pendientes (apt)\",\n   \"datasource\": \"VictoriaMetrics\"\
+    ,\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n \
+    \  \"targets\": [\n    {\n     \"expr\": \"sum(lab_pending_updates{source=\\\"apt\\\"})\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 2,\n   \"type\": \"\
+    stat\",\n   \"title\": \"Reinicio requerido\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 6,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n\
+    \    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"max(lab_reboot_required)\",\n     \"legendFormat\": \"\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 3,\n   \"type\": \"stat\",\n   \"title\": \"Servicios systemd fallidos\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n  \
+    \  \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\"\
+    : \"max(lab_systemd_failed_units)\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 4,\n   \"type\": \"stat\",\n   \"title\": \"Última actualización (h)\",\n\
+    \   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 4\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"h\"\n   \
+    \ },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"(time()-lab_updn_last_success_timestamp_seconds)/3600\",\n     \"legendFormat\": \"\",\n     \"refId\": \"A\"\n    }\n\
+    \   ]\n  },\n  {\n   \"id\": 5,\n   \"type\": \"timeseries\",\n   \"title\": \"Paquetes pendientes por fuente\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\"\
+    : 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_pending_updates\"\
+    ,\n     \"legendFormat\": \"{{source}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 6,\n   \"type\": \"timeseries\",\n   \"title\": \"Docker: CPU por contenedor\",\n   \"datasource\"\
+    : \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 4,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"percent\"\n    },\n    \"\
+    overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_docker_container_cpu_percent\",\n     \"legendFormat\": \"{{name}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\"\
+    : 7,\n   \"type\": \"timeseries\",\n   \"title\": \"Docker: memoria por contenedor\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 12,\n    \"w\": 12,\n   \
+    \ \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"lab_docker_container_memory_bytes\"\
+    ,\n     \"legendFormat\": \"{{name}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 8,\n   \"type\": \"timeseries\",\n   \"title\": \"LocalStack: servicios activos\",\n   \"datasource\"\
+    : \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 12,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\"\
+    : []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum(lab_localstack_service_running)\",\n     \"legendFormat\": \"running\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 9,\n  \
+    \ \"type\": \"timeseries\",\n   \"title\": \"Guacamole: CPU y memoria\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n  \
+    \ },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(pod)(rate(container_cpu_usage_seconds_total{namespace=\\\
+    \"guacamole\\\",container!=\\\"\\\"}[5m]))\",\n     \"legendFormat\": \"cpu {{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 10,\n   \"type\": \"timeseries\",\n   \"title\": \"\
+    Guacamole: memoria\",\n   \"datasource\": \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\": 20,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n \
+    \    \"unit\": \"bytes\"\n    },\n    \"overrides\": []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"max by(pod)(container_memory_working_set_bytes{namespace=\\\"guacamole\\\",container!=\\\"\\\
+    \"})\",\n     \"legendFormat\": \"{{pod}}\",\n     \"refId\": \"A\"\n    }\n   ]\n  },\n  {\n   \"id\": 11,\n   \"type\": \"timeseries\",\n   \"title\": \"Guacamole: peticiones web\",\n   \"datasource\"\
+    : \"VictoriaMetrics\",\n   \"gridPos\": {\n    \"x\": 0,\n    \"y\": 28,\n    \"w\": 12,\n    \"h\": 8\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"short\"\n    },\n    \"overrides\"\
+    : []\n   },\n   \"targets\": [\n    {\n     \"expr\": \"sum by(code)(rate(traefik_service_requests_total{service=~\\\".*guacamole.*\\\"}[5m]))\",\n     \"legendFormat\": \"{{code}}\",\n     \"refId\"\
+    : \"A\"\n    }\n   ]\n  }\n ]\n}\n"
+  internet---cloudflare-vs-personal.json: "{\n \"annotations\": {\n  \"list\": []\n },\n \"graphTooltip\": 1,\n \"panels\": [\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\
+    \n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"Mbits\"\n    },\n\
+    \    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n       \
+    \ \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\"\
+    : \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n      \
+    \ }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 0,\n    \"y\": 0\n   },\n   \"id\": 1,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\"\
+    : \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\"\
+    : false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"\
+    expr\": \"speedtest_download_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\"\
+    ,\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n\
+    \   \"title\": \"Bajada actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\"\
+    : {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\"\
+    : {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\"\
+    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n\
+    \       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\":\
+    \ {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 6,\n    \"y\": 0\n   },\n   \"id\": 2,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\"\
+    ,\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\
+    \n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_upload_mbps{provider=\\\"cloudflare\\\
+    \"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"\
+    expr\": \"speedtest_upload_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Subida actual\",\n   \"type\": \"stat\"\n  },\n\
+    \  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\"\
+    ,\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\
+    \n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n \
+    \    },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n \
+    \        \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 12,\n    \"y\": 0\n\
+    \   },\n   \"id\": 3,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n\
+    \     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
+    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n    \
+    \ \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"personal\\\"\
+    }\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Ping actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\"\
+    ,\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\"\
+    : 1,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n\
+    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
+    id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"\
+    mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 18,\n    \"y\": 0\n   },\n   \"id\": 4,\n   \"options\": {\n    \"\
+    colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n    \
+    \ ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"\
+    uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\"\
+    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"\
+    refId\": \"B\"\n    }\n   ],\n   \"title\": \"Jitter actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"\
+    fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\"\
+    : \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n\
+    \     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\"\
+    : [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
+    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
+    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Contratado\"\n      },\n      \"properties\":\
+    \ [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#9CA3AF\",\n         \"mode\": \"fixed\"\n        }\n       },\n       {\n        \"id\": \"custom.lineStyle\"\
+    ,\n        \"value\": {\n         \"dash\": [\n          10,\n          10\n         ],\n         \"fill\": \"dash\"\n        }\n       },\n       {\n        \"id\": \"custom.fillOpacity\",\n      \
+    \  \"value\": 0\n       },\n       {\n        \"id\": \"custom.lineWidth\",\n        \"value\": 1\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 9,\n    \"w\": 12,\n    \"x\"\
+    : 0,\n    \"y\": 4\n   },\n   \"id\": 5,\n   \"options\": {\n    \"legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\"\
+    : \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\": true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n   \
+    \  \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\"\
+    : \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\
+    \"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n\
+    \     \"expr\": \"vector($plan)\",\n     \"legendFormat\": \"Contratado\",\n     \"refId\": \"C\"\n    }\n   ],\n   \"title\": \"Bajada\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\"\
+    : {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\
+    \n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\": \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"\
+    showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"\
+    id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n        \
+    \ \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n\
+    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
+    id\": \"byName\",\n       \"options\": \"Contratado\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#9CA3AF\",\n        \
+    \ \"mode\": \"fixed\"\n        }\n       },\n       {\n        \"id\": \"custom.lineStyle\",\n        \"value\": {\n         \"dash\": [\n          10,\n          10\n         ],\n         \"fill\"\
+    : \"dash\"\n        }\n       },\n       {\n        \"id\": \"custom.fillOpacity\",\n        \"value\": 0\n       },\n       {\n        \"id\": \"custom.lineWidth\",\n        \"value\": 1\n       }\n\
+    \      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 9,\n    \"w\": 12,\n    \"x\": 12,\n    \"y\": 4\n   },\n   \"id\": 6,\n   \"options\": {\n    \"legend\": {\n     \"calcs\": [\n      \"\
+    mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\": true\n    },\n    \"tooltip\": {\n  \
+    \   \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n  \
+    \   \"expr\": \"speedtest_upload_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\"\
+    ,\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_upload_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    },\n    {\n \
+    \    \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"vector($plan)\",\n     \"legendFormat\": \"Contratado\",\n     \"refId\": \"\
+    C\"\n    }\n   ],\n   \"title\": \"Subida\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\"\
+    : {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\": \"opacity\"\
+    ,\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n     \"min\"\
+    : 0,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n\
+    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
+    id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"\
+    mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 8,\n    \"w\": 12,\n    \"x\": 0,\n    \"y\": 13\n   },\n   \"id\": 7,\n   \"options\": {\n    \"\
+    legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\"\
+    : true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\"\
+    : \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\"\
+    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\"\
+    : \"B\"\n    }\n   ],\n   \"title\": \"Latencia (ping)\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n  \
+    \ \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\"\
+    : \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n\
+    \     \"min\": 0,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\":\
+    \ [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
+    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
+    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 8,\n    \"w\": 12,\n    \"x\": 12,\n    \"y\": 13\n   },\n   \"id\": 8,\n   \"options\"\
+    : {\n    \"legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"\
+    showLegend\": true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n\
+    \      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n \
+    \    \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"\
+    Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Jitter\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\
+    \n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\"\
+    : \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\":\
+    \ \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\"\
+    ,\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\
+    \n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 0,\n    \"y\": 21\n   },\n   \"id\": 10,\n   \"options\": {\n    \"displayMode\": \"\
+    gradient\",\n    \"namePlacement\": \"top\",\n    \"orientation\": \"horizontal\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\"\
+    : false\n    },\n    \"showUnfilled\": true,\n    \"valueMode\": \"color\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\
+    \n     },\n     \"expr\": \"avg_over_time(speedtest_download_mbps{provider=\\\"cloudflare\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\",\n     \"range\": false,\n\
+    \     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_download_mbps{provider=\\\
+    \"personal\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Bajada promedio del periodo\"\
+    ,\n   \"type\": \"bargauge\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n\
+    \      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n\
+    \       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n\
+    \         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n\
+    \       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\":\
+    \ {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 8,\n    \"y\": 21\n   },\n   \"id\": 11,\n   \"options\": {\n    \"displayMode\": \"gradient\",\n    \"namePlacement\": \"top\",\n    \"orientation\": \"\
+    horizontal\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"showUnfilled\": true,\n    \"valueMode\": \"\
+    color\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_upload_mbps{provider=\\\
+    \"cloudflare\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\",\n     \"range\": false,\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\"\
+    : \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_upload_mbps{provider=\\\"personal\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\"\
+    : \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Subida promedio del periodo\",\n   \"type\": \"bargauge\"\n  },\n  {\n   \"datasource\": {\n    \"type\"\
+    : \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n\
+    \     \"decimals\": 1,\n     \"unit\": \"percent\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\"\
+    : [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
+    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
+    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 16,\n    \"y\": 21\n   },\n   \"id\": 12,\n   \"options\"\
+    : {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\
+    \n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n  \
+    \    \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_ok{provider=\\\"cloudflare\\\"}[$__range]) * 100\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\"\
+    ,\n     \"range\": false,\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_ok{provider=\\\
+    \"personal\\\"}[$__range]) * 100\",\n     \"instant\": true,\n     \"legendFormat\": \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Disponibilidad\",\n \
+    \  \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n    \
+    \  \"mode\": \"thresholds\"\n     },\n     \"mappings\": [\n      {\n       \"options\": {\n        \"0\": {\n         \"color\": \"red\",\n         \"index\": 1,\n         \"text\": \"FALLA\"\n   \
+    \     },\n        \"1\": {\n         \"color\": \"green\",\n         \"index\": 0,\n         \"text\": \"OK\"\n        }\n       },\n       \"type\": \"value\"\n      }\n     ],\n     \"thresholds\"\
+    : {\n      \"mode\": \"absolute\",\n      \"steps\": [\n       {\n        \"color\": \"red\",\n        \"value\": null\n       },\n       {\n        \"color\": \"green\",\n        \"value\": 1\n   \
+    \    }\n      ]\n     }\n    },\n    \"overrides\": []\n   },\n   \"gridPos\": {\n    \"h\": 5,\n    \"w\": 24,\n    \"x\": 0,\n    \"y\": 27\n   },\n   \"id\": 9,\n   \"options\": {\n    \"alignValue\"\
+    : \"left\",\n    \"legend\": {\n     \"showLegend\": false\n    },\n    \"mergeValues\": true,\n    \"rowHeight\": 0.8,\n    \"showValue\": \"never\"\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
+    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ok{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\"\
+    : \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ok{provider=\\\"personal\\\"}\",\n     \"legendFormat\"\
+    : \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Disponibilidad de las mediciones (OK / FALLA)\",\n   \"type\": \"state-timeline\"\n  }\n ],\n \"refresh\": \"1m\",\n \"schemaVersion\"\
+    : 39,\n \"tags\": [\n  \"speedtest\",\n  \"internet\"\n ],\n \"templating\": {\n  \"list\": [\n   {\n    \"current\": {\n     \"text\": \"100\",\n     \"value\": \"100\"\n    },\n    \"hide\": 0,\n\
+    \    \"label\": \"Mbps contratados\",\n    \"name\": \"plan\",\n    \"options\": [],\n    \"query\": \"100\",\n    \"type\": \"textbox\"\n   }\n  ]\n },\n \"time\": {\n  \"from\": \"now-24h\",\n  \"\
+    to\": \"now\"\n },\n \"timezone\": \"browser\",\n \"title\": \"Internet - Cloudflare vs Personal\",\n \"uid\": \"speedtest-isp\",\n \"version\": 2\n}\n"
 kind: ConfigMap
 metadata:
   name: grafana-dashboards

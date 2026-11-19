@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ai-valkey
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 1Gi
+  claimRef:
+    kind: PersistentVolumeClaim
+    name: valkey-data
+    namespace: ai
+    apiVersion: v1
+  hostPath:
+    path: /mnt/media4/_ai-stack/valkey
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ai-manual
+  volumeMode: Filesystem

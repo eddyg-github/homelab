@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ai-ollama
+spec:
+  accessModes:
+  - ReadWriteOnce
+  capacity:
+    storage: 60Gi
+  claimRef:
+    kind: PersistentVolumeClaim
+    name: ollama-data
+    namespace: ai
+    apiVersion: v1
+  hostPath:
+    path: /mnt/media4/_ai-stack/ollama
+    type: DirectoryOrCreate
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ai-manual
+  volumeMode: Filesystem
