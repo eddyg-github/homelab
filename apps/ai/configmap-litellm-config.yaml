@@ -1,20 +1,76 @@
 apiVersion: v1
 data:
-  config.yaml: "model_list:\n  # ---- LOCAL (Ollama) ----\n  - model_name: local-coder\n    litellm_params: { model: ollama/qwen2.5-coder:1.5b, api_base: \"http://ollama:11434\" }\n  - model_name: local-qwen\n\
-    \    litellm_params: { model: ollama/qwen2.5:3b, api_base: \"http://ollama:11434\" }\n  - model_name: local-llama\n    litellm_params: { model: ollama/llama3.2:3b, api_base: \"http://ollama:11434\"\
-    \ }\n  - model_name: embed-nomic\n    litellm_params: { model: ollama/nomic-embed-text, api_base: \"http://ollama:11434\" }\n  - model_name: gemini-embed\n    litellm_params: { model: gemini/gemini-embedding-001,\
-    \ api_key: os.environ/GEMINI_API_KEY }\n  # ---- GRATIS EN LA NUBE ----\n  - model_name: gemini-flash\n    litellm_params: { model: gemini/gemini-flash-latest, timeout: 15, num_retries: 0, api_key:\
-    \ os.environ/GEMINI_API_KEY }\n  - model_name: gemini-flash-lite\n    litellm_params: { model: gemini/gemini-flash-lite-latest, api_key: os.environ/GEMINI_API_KEY }\n  - model_name: groq-llama\n   \
-    \ litellm_params: { model: groq/llama-3.3-70b-versatile, api_key: os.environ/GROQ_API_KEY }\n  - model_name: codestral\n    litellm_params: { model: mistral/codestral-latest, api_key: os.environ/MISTRAL_API_KEY\
-    \ }\n  - model_name: or-deepseek-free\n    litellm_params: { model: \"openrouter/deepseek/deepseek-r1:free\", api_key: os.environ/OPENROUTER_API_KEY }\n  # ---- PAGOS: Anthropic, 2 cuentas ----\n  -\
-    \ model_name: claude-sonnet-a\n    litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }\n  - model_name: claude-sonnet-b\n    litellm_params: { model: anthropic/claude-sonnet-5-5,\
-    \ api_key: os.environ/ANTHROPIC_API_KEY_B }\n  - model_name: claude-haiku-a\n    litellm_params: { model: anthropic/claude-haiku-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }\n  - model_name: claude-sonnet\
-    \          # grupo balanceado\n    litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }\n  - model_name: claude-sonnet\n    litellm_params: { model: anthropic/claude-sonnet-5-5,\
-    \ api_key: os.environ/ANTHROPIC_API_KEY_B }\n  # ---- PAGOS: otros ----\n  - model_name: gpt\n    litellm_params: { model: openai/gpt-4o, api_key: os.environ/OPENAI_API_KEY }\n  - model_name: gpt-mini\n\
-    \    litellm_params: { model: openai/gpt-4o-mini, api_key: os.environ/OPENAI_API_KEY }\n  - model_name: grok\n    litellm_params: { model: xai/grok-4, api_key: os.environ/XAI_API_KEY }\n  - model_name:\
-    \ deepseek-chat\n    litellm_params: { model: deepseek/deepseek-chat, api_key: os.environ/DEEPSEEK_API_KEY }\nlitellm_settings:\n  drop_params: true\n  num_retries: 1\n  request_timeout: 600\n  cache:\
-    \ true\n  cache_params:\n    type: redis\n    host: valkey\n    port: 6379\n    password: os.environ/VALKEY_PASSWORD\n    ttl: 3600\nrouter_settings:\n  routing_strategy: simple-shuffle\n  fallbacks:\n\
-    \    - { \"gemini-flash\": [\"gemini-flash-lite\"] }\n    - { \"claude-sonnet\": [\"gemini-flash\"] }\n    - { \"gpt\": [\"gemini-flash\"] }\ngeneral_settings:\n  master_key: os.environ/LITELLM_MASTER_KEY\n"
+  config.yaml: |
+    model_list:
+      # ---- LOCAL (Ollama) ----
+      - model_name: local-coder
+        litellm_params: { model: ollama/qwen2.5-coder:1.5b, api_base: "http://ollama:11434" }
+      - model_name: local-qwen
+        litellm_params: { model: ollama/qwen2.5:3b, api_base: "http://ollama:11434" }
+      - model_name: local-llama
+        litellm_params: { model: ollama/llama3.2:3b, api_base: "http://ollama:11434" }
+      - model_name: embed-nomic
+        litellm_params: { model: ollama/nomic-embed-text, api_base: "http://ollama:11434" }
+      - model_name: gemini-embed
+        litellm_params: { model: gemini/gemini-embedding-001, api_key: os.environ/GEMINI_API_KEY }
+      - model_name: groq-gpt-oss-120b
+        litellm_params: { model: groq/openai/gpt-oss-120b, api_key: os.environ/GROQ_API_KEY }
+      - model_name: groq-gpt-oss-20b
+        litellm_params: { model: groq/openai/gpt-oss-20b, api_key: os.environ/GROQ_API_KEY }
+      - model_name: groq-qwen
+        litellm_params: { model: groq/qwen/qwen3.8-27b, api_key: os.environ/GROQ_API_KEY }
+      - model_name: or-gemma
+        litellm_params: { model: "openrouter/google/gemma-4-31b-it:free", api_key: os.environ/OPENROUTER_API_KEY }
+      - model_name: or-nemotron-ultra
+        litellm_params: { model: "openrouter/nvidia/nemotron-3-ultra-550b-a55b:free", api_key: os.environ/OPENROUTER_API_KEY }
+      - model_name: or-code
+        litellm_params: { model: "openrouter/cohere/north-mini-code:free", api_key: os.environ/OPENROUTER_API_KEY }
+      # ---- GRATIS EN LA NUBE ----
+      - model_name: gemini-flash
+        litellm_params: { model: gemini/gemini-flash-latest, timeout: 15, num_retries: 0, api_key: os.environ/GEMINI_API_KEY }
+      - model_name: gemini-flash-lite
+        litellm_params: { model: gemini/gemini-flash-lite-latest, api_key: os.environ/GEMINI_API_KEY }
+      - model_name: codestral
+        litellm_params: { model: mistral/codestral-latest, api_key: os.environ/MISTRAL_API_KEY }
+      # ---- PAGOS: Anthropic, 2 cuentas ----
+      - model_name: claude-sonnet-a
+        litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }
+      - model_name: claude-sonnet-b
+        litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_B }
+      - model_name: claude-haiku-a
+        litellm_params: { model: anthropic/claude-haiku-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }
+      - model_name: claude-sonnet          # grupo balanceado
+        litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_A }
+      - model_name: claude-sonnet
+        litellm_params: { model: anthropic/claude-sonnet-5-5, api_key: os.environ/ANTHROPIC_API_KEY_B }
+      # ---- PAGOS: otros ----
+      - model_name: gpt
+        litellm_params: { model: openai/gpt-4o, api_key: os.environ/OPENAI_API_KEY }
+      - model_name: gpt-mini
+        litellm_params: { model: openai/gpt-4o-mini, api_key: os.environ/OPENAI_API_KEY }
+      - model_name: grok
+        litellm_params: { model: xai/grok-4, api_key: os.environ/XAI_API_KEY }
+      - model_name: deepseek-chat
+        litellm_params: { model: deepseek/deepseek-chat, api_key: os.environ/DEEPSEEK_API_KEY }
+    litellm_settings:
+      drop_params: true
+      num_retries: 1
+      request_timeout: 600
+      cache: true
+      cache_params:
+        type: redis
+        host: valkey
+        port: 6379
+        password: os.environ/VALKEY_PASSWORD
+        ttl: 3600
+    router_settings:
+      routing_strategy: simple-shuffle
+      fallbacks:
+        - { "gemini-flash": ["gemini-flash-lite"] }
+        - { "claude-sonnet": ["gemini-flash"] }
+        - { "gpt": ["gemini-flash"] }
+    general_settings:
+      master_key: os.environ/LITELLM_MASTER_KEY
 kind: ConfigMap
 metadata:
   name: litellm-config
