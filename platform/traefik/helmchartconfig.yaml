@@ -7,4 +7,5 @@ spec:
   valuesContent: "service:\n  spec:\n    externalTrafficPolicy: Local\nlogs:\n  access:\n\
     \    enabled: true\n    format: json\nports:\n  web:\n    redirections:\n    \
     \  entryPoint:\n        to: websecure\n        scheme: https\n        permanent:\
-    \ true\n"
+    \ true\nadditionalArguments:\n- --entryPoints.websecure.transport.respondingTimeouts.readTimeout=0s\n\
+    - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=300s\n"
