@@ -3795,142 +3795,1033 @@ data:
       }
      ]
     }
-  internet---cloudflare-vs-personal.json: "{\n \"annotations\": {\n  \"list\": []\n },\n \"graphTooltip\": 1,\n \"panels\": [\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\
-    \n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"Mbits\"\n    },\n\
-    \    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n       \
-    \ \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\"\
-    : \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n      \
-    \ }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 0,\n    \"y\": 0\n   },\n   \"id\": 1,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\"\
-    : \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\"\
-    : false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"\
-    expr\": \"speedtest_download_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\"\
-    ,\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n\
-    \   \"title\": \"Bajada actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\"\
-    : {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\"\
-    : {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\"\
-    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n\
-    \       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\":\
-    \ {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 6,\n    \"y\": 0\n   },\n   \"id\": 2,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\"\
-    ,\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\
-    \n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_upload_mbps{provider=\\\"cloudflare\\\
-    \"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"\
-    expr\": \"speedtest_upload_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Subida actual\",\n   \"type\": \"stat\"\n  },\n\
-    \  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\"\
-    ,\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\
-    \n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n \
-    \    },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n \
-    \        \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 12,\n    \"y\": 0\n\
-    \   },\n   \"id\": 3,\n   \"options\": {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n\
-    \     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
-    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n    \
-    \ \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"personal\\\"\
-    }\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Ping actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\"\
-    ,\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\"\
-    : 1,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n\
-    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
-    id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"\
-    mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 4,\n    \"w\": 6,\n    \"x\": 18,\n    \"y\": 0\n   },\n   \"id\": 4,\n   \"options\": {\n    \"\
-    colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n    \
-    \ ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"\
-    uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\"\
-    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"\
-    refId\": \"B\"\n    }\n   ],\n   \"title\": \"Jitter actual\",\n   \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"\
-    fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\"\
-    : \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n\
-    \     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\"\
-    : [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
-    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
-    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Contratado\"\n      },\n      \"properties\":\
-    \ [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#9CA3AF\",\n         \"mode\": \"fixed\"\n        }\n       },\n       {\n        \"id\": \"custom.lineStyle\"\
-    ,\n        \"value\": {\n         \"dash\": [\n          10,\n          10\n         ],\n         \"fill\": \"dash\"\n        }\n       },\n       {\n        \"id\": \"custom.fillOpacity\",\n      \
-    \  \"value\": 0\n       },\n       {\n        \"id\": \"custom.lineWidth\",\n        \"value\": 1\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 9,\n    \"w\": 12,\n    \"x\"\
-    : 0,\n    \"y\": 4\n   },\n   \"id\": 5,\n   \"options\": {\n    \"legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\"\
-    : \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\": true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n   \
-    \  \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\"\
-    : \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_download_mbps{provider=\\\
-    \"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n\
-    \     \"expr\": \"vector($plan)\",\n     \"legendFormat\": \"Contratado\",\n     \"refId\": \"C\"\n    }\n   ],\n   \"title\": \"Bajada\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\"\
-    : {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\
-    \n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\": \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"\
-    showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"\
-    id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n        \
-    \ \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n\
-    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
-    id\": \"byName\",\n       \"options\": \"Contratado\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#9CA3AF\",\n        \
-    \ \"mode\": \"fixed\"\n        }\n       },\n       {\n        \"id\": \"custom.lineStyle\",\n        \"value\": {\n         \"dash\": [\n          10,\n          10\n         ],\n         \"fill\"\
-    : \"dash\"\n        }\n       },\n       {\n        \"id\": \"custom.fillOpacity\",\n        \"value\": 0\n       },\n       {\n        \"id\": \"custom.lineWidth\",\n        \"value\": 1\n       }\n\
-    \      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 9,\n    \"w\": 12,\n    \"x\": 12,\n    \"y\": 4\n   },\n   \"id\": 6,\n   \"options\": {\n    \"legend\": {\n     \"calcs\": [\n      \"\
-    mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\": true\n    },\n    \"tooltip\": {\n  \
-    \   \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n  \
-    \   \"expr\": \"speedtest_upload_mbps{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\"\
-    ,\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_upload_mbps{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\": \"B\"\n    },\n    {\n \
-    \    \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"vector($plan)\",\n     \"legendFormat\": \"Contratado\",\n     \"refId\": \"\
-    C\"\n    }\n   ],\n   \"title\": \"Subida\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\"\
-    : {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\": \"opacity\"\
-    ,\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n     \"min\"\
-    : 0,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n\
-    \        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"\
-    id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"\
-    mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 8,\n    \"w\": 12,\n    \"x\": 0,\n    \"y\": 13\n   },\n   \"id\": 7,\n   \"options\": {\n    \"\
-    legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"showLegend\"\
-    : true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\"\
-    : \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\"\
-    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ping_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"Personal\",\n     \"refId\"\
-    : \"B\"\n    }\n   ],\n   \"title\": \"Latencia (ping)\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n  \
-    \ \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"custom\": {\n      \"fillOpacity\": 18,\n      \"gradientMode\"\
-    : \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"lineWidth\": 2,\n      \"pointSize\": 5,\n      \"showPoints\": \"auto\",\n      \"spanNulls\": true\n     },\n     \"decimals\": 1,\n\
-    \     \"min\": 0,\n     \"unit\": \"ms\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\":\
-    \ [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
-    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
-    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 8,\n    \"w\": 12,\n    \"x\": 12,\n    \"y\": 13\n   },\n   \"id\": 8,\n   \"options\"\
-    : {\n    \"legend\": {\n     \"calcs\": [\n      \"mean\",\n      \"min\",\n      \"max\",\n      \"lastNotNull\"\n     ],\n     \"displayMode\": \"table\",\n     \"placement\": \"bottom\",\n     \"\
-    showLegend\": true\n    },\n    \"tooltip\": {\n     \"mode\": \"multi\",\n     \"sort\": \"desc\"\n    }\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n\
-    \      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\": \"A\"\n    },\n    {\n \
-    \    \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_jitter_ms{provider=\\\"personal\\\"}\",\n     \"legendFormat\": \"\
-    Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Jitter\",\n   \"type\": \"timeseries\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\
-    \n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\"\
-    : \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\":\
-    \ \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\"\
-    ,\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\
-    \n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 0,\n    \"y\": 21\n   },\n   \"id\": 10,\n   \"options\": {\n    \"displayMode\": \"\
-    gradient\",\n    \"namePlacement\": \"top\",\n    \"orientation\": \"horizontal\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\"\
-    : false\n    },\n    \"showUnfilled\": true,\n    \"valueMode\": \"color\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\
-    \n     },\n     \"expr\": \"avg_over_time(speedtest_download_mbps{provider=\\\"cloudflare\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\",\n     \"range\": false,\n\
-    \     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_download_mbps{provider=\\\
-    \"personal\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Bajada promedio del periodo\"\
-    ,\n   \"type\": \"bargauge\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n\
-    \      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n     \"decimals\": 1,\n     \"min\": 0,\n     \"unit\": \"Mbits\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n\
-    \       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n\
-    \         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n\
-    \       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\":\
-    \ {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 8,\n    \"y\": 21\n   },\n   \"id\": 11,\n   \"options\": {\n    \"displayMode\": \"gradient\",\n    \"namePlacement\": \"top\",\n    \"orientation\": \"\
-    horizontal\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"showUnfilled\": true,\n    \"valueMode\": \"\
-    color\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_upload_mbps{provider=\\\
-    \"cloudflare\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\",\n     \"range\": false,\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\"\
-    : \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_upload_mbps{provider=\\\"personal\\\"}[$__range])\",\n     \"instant\": true,\n     \"legendFormat\"\
-    : \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Subida promedio del periodo\",\n   \"type\": \"bargauge\"\n  },\n  {\n   \"datasource\": {\n    \"type\"\
-    : \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n      \"fixedColor\": \"#888888\",\n      \"mode\": \"fixed\"\n     },\n\
-    \     \"decimals\": 1,\n     \"unit\": \"percent\"\n    },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\",\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\"\
-    : [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#F6821F\",\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     },\n     {\n      \"matcher\"\
-    : {\n       \"id\": \"byName\",\n       \"options\": \"Personal\"\n      },\n      \"properties\": [\n       {\n        \"id\": \"color\",\n        \"value\": {\n         \"fixedColor\": \"#22D3EE\"\
-    ,\n         \"mode\": \"fixed\"\n        }\n       }\n      ]\n     }\n    ]\n   },\n   \"gridPos\": {\n    \"h\": 6,\n    \"w\": 8,\n    \"x\": 16,\n    \"y\": 21\n   },\n   \"id\": 12,\n   \"options\"\
-    : {\n    \"colorMode\": \"value\",\n    \"graphMode\": \"area\",\n    \"justifyMode\": \"center\",\n    \"orientation\": \"vertical\",\n    \"reduceOptions\": {\n     \"calcs\": [\n      \"lastNotNull\"\
-    \n     ],\n     \"fields\": \"\",\n     \"values\": false\n    },\n    \"textMode\": \"value_and_name\"\n   },\n   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n  \
-    \    \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_ok{provider=\\\"cloudflare\\\"}[$__range]) * 100\",\n     \"instant\": true,\n     \"legendFormat\": \"Cloudflare\"\
-    ,\n     \"range\": false,\n     \"refId\": \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg_over_time(speedtest_ok{provider=\\\
-    \"personal\\\"}[$__range]) * 100\",\n     \"instant\": true,\n     \"legendFormat\": \"Personal\",\n     \"range\": false,\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Disponibilidad\",\n \
-    \  \"type\": \"stat\"\n  },\n  {\n   \"datasource\": {\n    \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"color\": {\n    \
-    \  \"mode\": \"thresholds\"\n     },\n     \"mappings\": [\n      {\n       \"options\": {\n        \"0\": {\n         \"color\": \"red\",\n         \"index\": 1,\n         \"text\": \"FALLA\"\n   \
-    \     },\n        \"1\": {\n         \"color\": \"green\",\n         \"index\": 0,\n         \"text\": \"OK\"\n        }\n       },\n       \"type\": \"value\"\n      }\n     ],\n     \"thresholds\"\
-    : {\n      \"mode\": \"absolute\",\n      \"steps\": [\n       {\n        \"color\": \"red\",\n        \"value\": null\n       },\n       {\n        \"color\": \"green\",\n        \"value\": 1\n   \
-    \    }\n      ]\n     }\n    },\n    \"overrides\": []\n   },\n   \"gridPos\": {\n    \"h\": 5,\n    \"w\": 24,\n    \"x\": 0,\n    \"y\": 27\n   },\n   \"id\": 9,\n   \"options\": {\n    \"alignValue\"\
-    : \"left\",\n    \"legend\": {\n     \"showLegend\": false\n    },\n    \"mergeValues\": true,\n    \"rowHeight\": 0.8,\n    \"showValue\": \"never\"\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
-    : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ok{provider=\\\"cloudflare\\\"}\",\n     \"legendFormat\": \"Cloudflare\",\n     \"refId\"\
-    : \"A\"\n    },\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"speedtest_ok{provider=\\\"personal\\\"}\",\n     \"legendFormat\"\
-    : \"Personal\",\n     \"refId\": \"B\"\n    }\n   ],\n   \"title\": \"Disponibilidad de las mediciones (OK / FALLA)\",\n   \"type\": \"state-timeline\"\n  }\n ],\n \"refresh\": \"1m\",\n \"schemaVersion\"\
-    : 39,\n \"tags\": [\n  \"speedtest\",\n  \"internet\"\n ],\n \"templating\": {\n  \"list\": [\n   {\n    \"current\": {\n     \"text\": \"100\",\n     \"value\": \"100\"\n    },\n    \"hide\": 0,\n\
-    \    \"label\": \"Mbps contratados\",\n    \"name\": \"plan\",\n    \"options\": [],\n    \"query\": \"100\",\n    \"type\": \"textbox\"\n   }\n  ]\n },\n \"time\": {\n  \"from\": \"now-24h\",\n  \"\
-    to\": \"now\"\n },\n \"timezone\": \"browser\",\n \"title\": \"Internet - Cloudflare vs Personal\",\n \"uid\": \"speedtest-isp\",\n \"version\": 2\n}\n"
+  internet---cloudflare-vs-personal.json: |-
+    {
+     "uid": "speedtest-isp",
+     "title": "Internet - Cloudflare vs Personal",
+     "tags": [
+      "speedtest",
+      "internet"
+     ],
+     "timezone": "browser",
+     "schemaVersion": 39,
+     "version": 1,
+     "refresh": "1m",
+     "graphTooltip": 1,
+     "time": {
+      "from": "now-24h",
+      "to": "now"
+     },
+     "annotations": {
+      "list": []
+     },
+     "templating": {
+      "list": []
+     },
+     "panels": [
+      {
+       "id": 1,
+       "type": "gauge",
+       "title": "Cloudflare - Bajada",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 6,
+        "h": 7
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(last_over_time(speedtest_download_mbps{provider=\"cloudflare\"}[7d]))",
+         "legendFormat": "Cloudflare - Bajada",
+         "instant": true,
+         "range": false,
+         "refId": "A"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "decimals": 0,
+         "min": 0,
+         "max": 300,
+         "noValue": "sin datos",
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#F6821F"
+         }
+        },
+        "overrides": []
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "showThresholdMarkers": false,
+        "showThresholdLabels": false,
+        "orientation": "auto"
+       }
+      },
+      {
+       "id": 2,
+       "type": "gauge",
+       "title": "Cloudflare - Subida",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 6,
+        "y": 0,
+        "w": 6,
+        "h": 7
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(last_over_time(speedtest_upload_mbps{provider=\"cloudflare\"}[7d]))",
+         "legendFormat": "Cloudflare - Subida",
+         "instant": true,
+         "range": false,
+         "refId": "A"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "decimals": 0,
+         "min": 0,
+         "max": 300,
+         "noValue": "sin datos",
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#F6821F"
+         }
+        },
+        "overrides": []
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "showThresholdMarkers": false,
+        "showThresholdLabels": false,
+        "orientation": "auto"
+       }
+      },
+      {
+       "id": 3,
+       "type": "gauge",
+       "title": "Personal - Bajada",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 6,
+        "h": 7
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(last_over_time(speedtest_download_mbps{provider=\"personal\"}[7d]))",
+         "legendFormat": "Personal - Bajada",
+         "instant": true,
+         "range": false,
+         "refId": "A"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "decimals": 0,
+         "min": 0,
+         "max": 300,
+         "noValue": "sin datos",
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#22D3EE"
+         }
+        },
+        "overrides": []
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "showThresholdMarkers": false,
+        "showThresholdLabels": false,
+        "orientation": "auto"
+       }
+      },
+      {
+       "id": 4,
+       "type": "gauge",
+       "title": "Personal - Subida",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 18,
+        "y": 0,
+        "w": 6,
+        "h": 7
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(last_over_time(speedtest_upload_mbps{provider=\"personal\"}[7d]))",
+         "legendFormat": "Personal - Subida",
+         "instant": true,
+         "range": false,
+         "refId": "A"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "decimals": 0,
+         "min": 0,
+         "max": 300,
+         "noValue": "sin datos",
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#22D3EE"
+         }
+        },
+        "overrides": []
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "showThresholdMarkers": false,
+        "showThresholdLabels": false,
+        "orientation": "auto"
+       }
+      },
+      {
+       "id": 5,
+       "type": "timeseries",
+       "title": "Bajada",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 0,
+        "y": 7,
+        "w": 12,
+        "h": 9
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_download_mbps{provider=\"cloudflare\"})",
+         "legendFormat": "Cloudflare",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_download_mbps{provider=\"personal\"})",
+         "legendFormat": "Personal",
+         "refId": "B"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         },
+         "custom": {
+          "lineWidth": 2,
+          "fillOpacity": 18,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "showPoints": "auto",
+          "pointSize": 5,
+          "spanNulls": true
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "legend": {
+         "showLegend": true,
+         "displayMode": "table",
+         "placement": "bottom",
+         "calcs": [
+          "mean",
+          "min",
+          "max",
+          "lastNotNull"
+         ]
+        },
+        "tooltip": {
+         "mode": "multi",
+         "sort": "desc"
+        }
+       }
+      },
+      {
+       "id": 6,
+       "type": "timeseries",
+       "title": "Subida",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 12,
+        "y": 7,
+        "w": 12,
+        "h": 9
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_upload_mbps{provider=\"cloudflare\"})",
+         "legendFormat": "Cloudflare",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_upload_mbps{provider=\"personal\"})",
+         "legendFormat": "Personal",
+         "refId": "B"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         },
+         "custom": {
+          "lineWidth": 2,
+          "fillOpacity": 18,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "showPoints": "auto",
+          "pointSize": 5,
+          "spanNulls": true
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "legend": {
+         "showLegend": true,
+         "displayMode": "table",
+         "placement": "bottom",
+         "calcs": [
+          "mean",
+          "min",
+          "max",
+          "lastNotNull"
+         ]
+        },
+        "tooltip": {
+         "mode": "multi",
+         "sort": "desc"
+        }
+       }
+      },
+      {
+       "id": 7,
+       "type": "timeseries",
+       "title": "Latencia (ping)",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_ping_ms{provider=\"cloudflare\"})",
+         "legendFormat": "Cloudflare",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_ping_ms{provider=\"personal\"})",
+         "legendFormat": "Personal",
+         "refId": "B"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "ms",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         },
+         "custom": {
+          "lineWidth": 2,
+          "fillOpacity": 18,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "showPoints": "auto",
+          "pointSize": 5,
+          "spanNulls": true
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "legend": {
+         "showLegend": true,
+         "displayMode": "table",
+         "placement": "bottom",
+         "calcs": [
+          "mean",
+          "min",
+          "max",
+          "lastNotNull"
+         ]
+        },
+        "tooltip": {
+         "mode": "multi",
+         "sort": "desc"
+        }
+       }
+      },
+      {
+       "id": 8,
+       "type": "timeseries",
+       "title": "Jitter",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_jitter_ms{provider=\"cloudflare\"})",
+         "legendFormat": "Cloudflare",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_jitter_ms{provider=\"personal\"})",
+         "legendFormat": "Personal",
+         "refId": "B"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "ms",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         },
+         "custom": {
+          "lineWidth": 2,
+          "fillOpacity": 18,
+          "gradientMode": "opacity",
+          "lineInterpolation": "smooth",
+          "showPoints": "auto",
+          "pointSize": 5,
+          "spanNulls": true
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "legend": {
+         "showLegend": true,
+         "displayMode": "table",
+         "placement": "bottom",
+         "calcs": [
+          "mean",
+          "min",
+          "max",
+          "lastNotNull"
+         ]
+        },
+        "tooltip": {
+         "mode": "multi",
+         "sort": "desc"
+        }
+       }
+      },
+      {
+       "id": 10,
+       "type": "bargauge",
+       "title": "Bajada promedio del periodo",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 0,
+        "y": 24,
+        "w": 8,
+        "h": 6
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_download_mbps{provider=\"cloudflare\"}[$__range]))",
+         "legendFormat": "Cloudflare",
+         "refId": "A",
+         "instant": true,
+         "range": false
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_download_mbps{provider=\"personal\"}[$__range]))",
+         "legendFormat": "Personal",
+         "refId": "B",
+         "instant": true,
+         "range": false
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "top"
+       }
+      },
+      {
+       "id": 11,
+       "type": "bargauge",
+       "title": "Subida promedio del periodo",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 8,
+        "y": 24,
+        "w": 8,
+        "h": 6
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_upload_mbps{provider=\"cloudflare\"}[$__range]))",
+         "legendFormat": "Cloudflare",
+         "refId": "A",
+         "instant": true,
+         "range": false
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_upload_mbps{provider=\"personal\"}[$__range]))",
+         "legendFormat": "Personal",
+         "refId": "B",
+         "instant": true,
+         "range": false
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "Mbits",
+         "min": 0,
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "valueMode": "color",
+        "namePlacement": "top"
+       }
+      },
+      {
+       "id": 12,
+       "type": "stat",
+       "title": "Disponibilidad",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 16,
+        "y": 24,
+        "w": 8,
+        "h": 6
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_ok{provider=\"cloudflare\"}[$__range]) * 100)",
+         "legendFormat": "Cloudflare",
+         "refId": "A",
+         "instant": true,
+         "range": false
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(avg_over_time(speedtest_ok{provider=\"personal\"}[$__range]) * 100)",
+         "legendFormat": "Personal",
+         "refId": "B",
+         "instant": true,
+         "range": false
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "unit": "percent",
+         "decimals": 1,
+         "color": {
+          "mode": "fixed",
+          "fixedColor": "#888888"
+         }
+        },
+        "overrides": [
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Cloudflare"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#F6821F"
+            }
+           }
+          ]
+         },
+         {
+          "matcher": {
+           "id": "byName",
+           "options": "Personal"
+          },
+          "properties": [
+           {
+            "id": "color",
+            "value": {
+             "mode": "fixed",
+             "fixedColor": "#22D3EE"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       "options": {
+        "reduceOptions": {
+         "calcs": [
+          "lastNotNull"
+         ],
+         "fields": "",
+         "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "value_and_name",
+        "justifyMode": "center",
+        "orientation": "vertical"
+       }
+      },
+      {
+       "id": 9,
+       "type": "state-timeline",
+       "title": "Disponibilidad de las mediciones (OK / FALLA)",
+       "datasource": {
+        "type": "prometheus",
+        "uid": "P4169E866C3094E38"
+       },
+       "gridPos": {
+        "x": 0,
+        "y": 30,
+        "w": 24,
+        "h": 5
+       },
+       "targets": [
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_ok{provider=\"cloudflare\"})",
+         "legendFormat": "Cloudflare",
+         "refId": "A"
+        },
+        {
+         "datasource": {
+          "type": "prometheus",
+          "uid": "P4169E866C3094E38"
+         },
+         "expr": "avg(speedtest_ok{provider=\"personal\"})",
+         "legendFormat": "Personal",
+         "refId": "B"
+        }
+       ],
+       "fieldConfig": {
+        "defaults": {
+         "color": {
+          "mode": "thresholds"
+         },
+         "thresholds": {
+          "mode": "absolute",
+          "steps": [
+           {
+            "color": "red",
+            "value": null
+           },
+           {
+            "color": "green",
+            "value": 1
+           }
+          ]
+         },
+         "mappings": [
+          {
+           "type": "value",
+           "options": {
+            "1": {
+             "text": "OK",
+             "color": "green",
+             "index": 0
+            },
+            "0": {
+             "text": "FALLA",
+             "color": "red",
+             "index": 1
+            }
+           }
+          }
+         ]
+        },
+        "overrides": []
+       },
+       "options": {
+        "mergeValues": true,
+        "showValue": "never",
+        "rowHeight": 0.8,
+        "alignValue": "left",
+        "legend": {
+         "showLegend": false
+        }
+       }
+      }
+     ]
+    }
 kind: ConfigMap
 metadata:
   name: grafana-dashboards
