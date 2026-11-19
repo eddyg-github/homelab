@@ -50,13 +50,23 @@ spec:
           name: db
       dnsPolicy: ClusterFirst
       initContainers:
+      - name: boot-delay
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        resources:
+          requests:
+            cpu: 1m
+            memory: 4Mi
+          limits:
+            memory: 16Mi
       - command:
         - sh
         - -c
-        - "if [ ! -f /database/filebrowser.db ]; then\n  echo \"Initializing DB...\"\
-          \n  filebrowser config init --database /database/filebrowser.db\n  filebrowser\
-          \ users add admin \"$FB_ADMIN_PASSWORD\" --perm.admin --database /database/filebrowser.db\n\
-          else\n  echo \"DB already exists, skipping init\"\nfi\n"
+        - "if [ ! -f /database/filebrowser.db ]; then\n  echo \"Initializing DB...\"\n  filebrowser config init --database /database/filebrowser.db\n  filebrowser users add admin \"$FB_ADMIN_PASSWORD\"\
+          \ --perm.admin --database /database/filebrowser.db\nelse\n  echo \"DB already exists, skipping init\"\nfi\n"
         image: filebrowser/filebrowser:latest
         imagePullPolicy: Always
         name: init-filebrowser

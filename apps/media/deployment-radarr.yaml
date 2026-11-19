@@ -61,3 +61,16 @@ spec:
       - name: config
         persistentVolumeClaim:
           claimName: radarr-config
+      initContainers:
+      - name: boot-delay
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        resources:
+          requests:
+            cpu: 1m
+            memory: 4Mi
+          limits:
+            memory: 16Mi

@@ -1,56 +1,175 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: {name: nc-pgdata, namespace: nextcloud}
-spec: {accessModes: [ReadWriteOnce], storageClassName: local-path, resources: {requests: {storage: 5Gi}}}
+metadata:
+  name: nc-pgdata
+  namespace: nextcloud
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: nc-postgres, namespace: nextcloud}
+metadata:
+  name: nc-postgres
+  namespace: nextcloud
 spec:
   replicas: 1
-  strategy: {type: Recreate}
-  selector: {matchLabels: {app: nc-postgres}}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nc-postgres
   template:
-    metadata: {labels: {app: nc-postgres}}
+    metadata:
+      labels:
+        app: nc-postgres
     spec:
-      securityContext: {fsGroup: 70, seccompProfile: {type: RuntimeDefault}}
+      securityContext:
+        fsGroup: 70
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: postgres
-          image: postgres:16-alpine
-          securityContext: {runAsUser: 70, runAsNonRoot: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
-          ports: [{containerPort: 5432}]
-          env: [{name: PGDATA, value: /var/lib/postgresql/data/pgdata}]
-          envFrom: [{secretRef: {name: nc-env}}]
-          readinessProbe: {exec: {command: [sh, -c, 'pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"']}, periodSeconds: 10, failureThreshold: 12}
-          resources: {requests: {cpu: 20m, memory: 128Mi}, limits: {memory: 512Mi}}
-          volumeMounts: [{name: data, mountPath: /var/lib/postgresql/data}]
-      volumes: [{name: data, persistentVolumeClaim: {claimName: nc-pgdata}}]
+      - name: postgres
+        image: postgres:16-alpine
+        securityContext:
+          runAsUser: 70
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - containerPort: 5432
+        env:
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+        envFrom:
+        - secretRef:
+            name: nc-env
+        readinessProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+          periodSeconds: 10
+          failureThreshold: 12
+        resources:
+          requests:
+            cpu: 20m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: nc-pgdata
+      initContainers:
+      - name: boot-delay
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        resources:
+          requests:
+            cpu: 1m
+            memory: 4Mi
+          limits:
+            memory: 16Mi
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: nc-postgres, namespace: nextcloud}
-spec: {selector: {app: nc-postgres}, ports: [{name: pg, port: 5432, targetPort: 5432}]}
+metadata:
+  name: nc-postgres
+  namespace: nextcloud
+spec:
+  selector:
+    app: nc-postgres
+  ports:
+  - name: pg
+    port: 5432
+    targetPort: 5432
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: nc-redis, namespace: nextcloud}
+metadata:
+  name: nc-redis
+  namespace: nextcloud
 spec:
   replicas: 1
-  selector: {matchLabels: {app: nc-redis}}
+  selector:
+    matchLabels:
+      app: nc-redis
   template:
-    metadata: {labels: {app: nc-redis}}
+    metadata:
+      labels:
+        app: nc-redis
     spec:
-      securityContext: {seccompProfile: {type: RuntimeDefault}}
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
-        - name: redis
-          image: redis:7-alpine
-          args: ["--save", "", "--appendonly", "no", "--maxmemory", "96mb", "--maxmemory-policy", "allkeys-lru"]
-          securityContext: {runAsUser: 999, runAsNonRoot: true, allowPrivilegeEscalation: false, capabilities: {drop: [ALL]}}
-          ports: [{containerPort: 6379}]
-          readinessProbe: {tcpSocket: {port: 6379}, periodSeconds: 10}
-          resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 160Mi}}
+      - name: redis
+        image: redis:7-alpine
+        args:
+        - --save
+        - ''
+        - --appendonly
+        - 'no'
+        - --maxmemory
+        - 96mb
+        - --maxmemory-policy
+        - allkeys-lru
+        securityContext:
+          runAsUser: 999
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        ports:
+        - containerPort: 6379
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          periodSeconds: 10
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            memory: 160Mi
+      initContainers:
+      - name: boot-delay
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        resources:
+          requests:
+            cpu: 1m
+            memory: 4Mi
+          limits:
+            memory: 16Mi
 ---
 apiVersion: v1
 kind: Service
-metadata: {name: nc-redis, namespace: nextcloud}
-spec: {selector: {app: nc-redis}, ports: [{name: redis, port: 6379, targetPort: 6379}]}
+metadata:
+  name: nc-redis
+  namespace: nextcloud
+spec:
+  selector:
+    app: nc-redis
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379

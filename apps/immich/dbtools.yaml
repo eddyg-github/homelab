@@ -1,33 +1,76 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
-metadata: {name: im-dumps, namespace: immich}
-spec: {accessModes: [ReadWriteOnce], storageClassName: local-path, resources: {requests: {storage: 2Gi}}}
+metadata:
+  name: im-dumps
+  namespace: immich
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 2Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
-metadata: {name: im-dumps-holder, namespace: immich}
+metadata:
+  name: im-dumps-holder
+  namespace: immich
 spec:
   replicas: 1
-  strategy: {type: Recreate}
-  selector: {matchLabels: {app: im-dumps-holder}}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: im-dumps-holder
   template:
     metadata:
-      labels: {app: im-dumps-holder}
-      annotations: {backup.velero.io/backup-volumes: dumps}
+      labels:
+        app: im-dumps-holder
+      annotations:
+        backup.velero.io/backup-volumes: dumps
     spec:
       containers:
-        - name: holder
-          image: busybox:1.36
-          command: [sh, -c, "while true; do sleep 3600; done"]
-          resources: {requests: {cpu: 5m, memory: 8Mi}, limits: {memory: 32Mi}}
-          volumeMounts: [{name: dumps, mountPath: /dumps}]
-      volumes: [{name: dumps, persistentVolumeClaim: {claimName: im-dumps}}]
+      - name: holder
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - while true; do sleep 3600; done
+        resources:
+          requests:
+            cpu: 5m
+            memory: 8Mi
+          limits:
+            memory: 32Mi
+        volumeMounts:
+        - name: dumps
+          mountPath: /dumps
+      volumes:
+      - name: dumps
+        persistentVolumeClaim:
+          claimName: im-dumps
+      initContainers:
+      - name: boot-delay
+        image: busybox:1.36
+        command:
+        - sh
+        - -c
+        - T=420; U=$(cut -d. -f1 /proc/uptime); [ "$U" -lt "$T" ] && sleep $((T-U)); exit 0
+        resources:
+          requests:
+            cpu: 1m
+            memory: 4Mi
+          limits:
+            memory: 16Mi
 ---
 apiVersion: batch/v1
 kind: CronJob
-metadata: {name: im-pgdump, namespace: immich}
+metadata:
+  name: im-pgdump
+  namespace: immich
 spec:
-  schedule: "45 2 * * *"
+  schedule: 45 2 * * *
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 2
   failedJobsHistoryLimit: 2
@@ -35,25 +78,57 @@ spec:
     spec:
       backoffLimit: 2
       template:
-        metadata: {labels: {app: im-dbtools}}
+        metadata:
+          labels:
+            app: im-dbtools
         spec:
           restartPolicy: OnFailure
           containers:
-            - name: dump
-              image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
-              env:
-                - {name: PGHOST, value: im-postgres}
-                - {name: PGUSER, valueFrom: {secretKeyRef: {name: im-env, key: POSTGRES_USER}}}
-                - {name: PGPASSWORD, valueFrom: {secretKeyRef: {name: im-env, key: POSTGRES_PASSWORD}}}
-                - {name: PGDATABASE, valueFrom: {secretKeyRef: {name: im-env, key: POSTGRES_DB}}}
-              command: [/bin/sh, -c]
-              args:
-                - |
-                  set -e
-                  F=/dumps/immich-$(date +%F).sql
-                  pg_dump > "$F"; gzip -f "$F"
-                  find /dumps -name 'immich-*.sql.gz' -mtime +7 -delete
-                  ls -la /dumps
-              resources: {requests: {cpu: 10m, memory: 32Mi}, limits: {memory: 256Mi}}
-              volumeMounts: [{name: dumps, mountPath: /dumps}]
-          volumes: [{name: dumps, persistentVolumeClaim: {claimName: im-dumps}}]
+          - name: dump
+            image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+            env:
+            - name: PGHOST
+              value: im-postgres
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: im-env
+                  key: POSTGRES_USER
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: im-env
+                  key: POSTGRES_PASSWORD
+            - name: PGDATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: im-env
+                  key: POSTGRES_DB
+            command:
+            - /bin/sh
+            - -c
+            args:
+            - 'set -e
+
+              F=/dumps/immich-$(date +%F).sql
+
+              pg_dump > "$F"; gzip -f "$F"
+
+              find /dumps -name ''immich-*.sql.gz'' -mtime +7 -delete
+
+              ls -la /dumps
+
+              '
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 256Mi
+            volumeMounts:
+            - name: dumps
+              mountPath: /dumps
+          volumes:
+          - name: dumps
+            persistentVolumeClaim:
+              claimName: im-dumps
