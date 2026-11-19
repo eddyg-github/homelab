@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+  namespace: garrahan-lab
+spec:
+  redirectScheme:
+    permanent: true
+    scheme: https
