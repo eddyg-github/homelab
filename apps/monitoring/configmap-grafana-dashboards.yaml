@@ -3851,7 +3851,7 @@ data:
          "unit": "Mbits",
          "decimals": 0,
          "min": 0,
-         "max": 300,
+         "max": 1000,
          "noValue": "sin datos",
          "color": {
           "mode": "fixed",
@@ -3905,7 +3905,7 @@ data:
          "unit": "Mbits",
          "decimals": 0,
          "min": 0,
-         "max": 300,
+         "max": 1000,
          "noValue": "sin datos",
          "color": {
           "mode": "fixed",
@@ -3959,7 +3959,7 @@ data:
          "unit": "Mbits",
          "decimals": 0,
          "min": 0,
-         "max": 300,
+         "max": 1000,
          "noValue": "sin datos",
          "color": {
           "mode": "fixed",
@@ -4013,7 +4013,7 @@ data:
          "unit": "Mbits",
          "decimals": 0,
          "min": 0,
-         "max": 300,
+         "max": 1000,
          "noValue": "sin datos",
          "color": {
           "mode": "fixed",
