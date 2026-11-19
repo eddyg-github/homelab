@@ -47,7 +47,7 @@ spec:
                 secretKeyRef:
                   key: ADMIN_PASSWORD
                   name: planigrafo-secrets
-          image: ghcr.io/eddyg-github/planigrafo-backend:2026-11-15-1
+          image: ghcr.io/eddyg-github/planigrafo-backend:2026-11-19-lab2
           imagePullPolicy: IfNotPresent
           livenessProbe:
             failureThreshold: 6
