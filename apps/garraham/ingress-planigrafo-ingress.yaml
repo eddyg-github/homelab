@@ -5,7 +5,6 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: 'true'
-    traefik.ingress.kubernetes.io/router.middlewares: garraham-redirect-garrahan@kubernetescrd
   name: planigrafo-ingress
   namespace: garraham
 spec:
