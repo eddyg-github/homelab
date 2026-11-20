@@ -17,7 +17,7 @@ spec:
       labels:
         app: grafana
       annotations:
-        checksum/dashboards: e8596b797c49
+        checksum/dashboards: \"0da6acfa0635\"
         backup.velero.io/backup-volumes: gdata
     spec:
       containers:
