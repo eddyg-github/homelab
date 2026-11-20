@@ -1775,7 +1775,7 @@ data:
     \  \"90d\"\n  ]\n }\n}"
   planigrafo-uci-envs.json: "{\n  \"title\": \"Planígrafo UCI — garrahan-lab & garraham\"\
     ,\n  \"uid\": \"planigrafo-uci-envs\",\n  \"timezone\": \"browser\",\n  \"schemaVersion\"\
-    : 39,\n  \"version\": 2,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
+    : 39,\n  \"version\": 3,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
     tags\": [\n    \"planigrafo\",\n    \"garrahan\",\n    \"k3s\",\n    \"victoriametrics\"\
     \n  ],\n  \"templating\": {\n    \"list\": [\n      {\n        \"name\": \"env\"\
     ,\n        \"label\": \"Entorno\",\n        \"type\": \"query\",\n        \"query\"\
@@ -1899,9 +1899,10 @@ data:
     fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"ops\",\n    \
     \      \"custom\": {\n            \"lineWidth\": 2,\n            \"fillOpacity\"\
     : 10\n          }\n        }\n      },\n      \"targets\": [\n        {\n    \
-    \      \"refId\": \"A\",\n          \"expr\": \"sum(rate(vmagent_rem RW_samples_sent_total[5m]))\
-    \ or sum(rate(vm_promscrape_scraped_samples_total[5m])) or sum(rate(apiserver_request_total[5m]))\"\
-    ,\n          \"legendFormat\": \"rate consultas/muestras\"\n        }\n      ]\n\
+    \      \"refId\": \"A\",\n          \"expr\": \"sum(rate(vmagent_remotewrite_rows_pushed_after_relabel_total[5m]))\"\
+    ,\n          \"legendFormat\": \"rows pushed / s (vmagent)\"\n        },\n   \
+    \     {\n          \"refId\": \"B\",\n          \"expr\": \"sum(scrape_samples_scraped)\"\
+    ,\n          \"legendFormat\": \"samples scraped total\"\n        }\n      ]\n\
     \    }\n  ]\n}\n"
 kind: ConfigMap
 metadata:
