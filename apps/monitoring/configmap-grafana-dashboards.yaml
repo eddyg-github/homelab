@@ -1775,7 +1775,7 @@ data:
     \  \"90d\"\n  ]\n }\n}"
   planigrafo-uci-envs.json: "{\n  \"title\": \"Planígrafo UCI — garrahan-lab & garraham\"\
     ,\n  \"uid\": \"planigrafo-uci-envs\",\n  \"timezone\": \"browser\",\n  \"schemaVersion\"\
-    : 39,\n  \"version\": 1,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
+    : 39,\n  \"version\": 2,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
     tags\": [\n    \"planigrafo\",\n    \"garrahan\",\n    \"k3s\",\n    \"victoriametrics\"\
     \n  ],\n  \"templating\": {\n    \"list\": [\n      {\n        \"name\": \"env\"\
     ,\n        \"label\": \"Entorno\",\n        \"type\": \"query\",\n        \"query\"\
@@ -1785,69 +1785,124 @@ data:
     \ true,\n          \"text\": [\n            \"All\"\n          ],\n          \"\
     value\": [\n            \"$__all\"\n          ]\n        },\n        \"refresh\"\
     : 1\n      }\n    ]\n  },\n  \"panels\": [\n    {\n      \"id\": 1,\n      \"\
-    title\": \"Disponibilidad / Pods Ready\",\n      \"type\": \"stat\",\n      \"\
-    gridPos\": {\n        \"h\": 5,\n        \"w\": 8,\n        \"x\": 0,\n      \
-    \  \"y\": 0\n      },\n      \"options\": {\n        \"reduceOptions\": {\n  \
-    \        \"calcs\": [\n            \"lastNotNull\"\n          ],\n          \"\
-    fields\": \"\",\n          \"values\": false\n        },\n        \"orientation\"\
-    : \"horizontal\",\n        \"textMode\": \"value_and_name\",\n        \"colorMode\"\
-    : \"background\",\n        \"graphMode\": \"none\"\n      },\n      \"fieldConfig\"\
-    : {\n        \"defaults\": {\n          \"mappings\": [\n            {\n     \
-    \         \"type\": \"value\",\n              \"options\": {\n               \
-    \ \"0\": {\n                  \"text\": \"DOWN\",\n                  \"color\"\
-    : \"red\"\n                }\n              }\n            }\n          ],\n \
-    \         \"thresholds\": {\n            \"mode\": \"absolute\",\n           \
-    \ \"steps\": [\n              {\n                \"color\": \"red\",\n       \
-    \         \"value\": null\n              },\n              {\n               \
-    \ \"color\": \"green\",\n                \"value\": 1\n              }\n     \
-    \       ]\n          }\n        }\n      },\n      \"targets\": [\n        {\n\
-    \          \"refId\": \"A\",\n          \"expr\": \"max by (namespace) (kube_pod_status_ready{namespace=~\\\
-    \"$env\\\", condition=\\\"true\\\", pod=~\\\"frontend.*\\\"})\",\n          \"\
-    legendFormat\": \"{{namespace}}\"\n        }\n      ]\n    },\n    {\n      \"\
-    id\": 2,\n      \"title\": \"Replicas Frontend Ready\",\n      \"type\": \"stat\"\
-    ,\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 8,\n        \"x\":\
-    \ 8,\n        \"y\": 0\n      },\n      \"options\": {\n        \"reduceOptions\"\
-    : {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n     \
-    \     \"fields\": \"\",\n          \"values\": false\n        },\n        \"orientation\"\
-    : \"horizontal\",\n        \"textMode\": \"value_and_name\",\n        \"colorMode\"\
-    : \"value\"\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n   \
-    \       \"thresholds\": {\n            \"mode\": \"absolute\",\n            \"\
-    steps\": [\n              {\n                \"color\": \"red\",\n           \
-    \     \"value\": null\n              },\n              {\n                \"color\"\
-    : \"green\",\n                \"value\": 1\n              }\n            ]\n \
-    \         }\n        }\n      },\n      \"targets\": [\n        {\n          \"\
-    refId\": \"A\",\n          \"expr\": \"sum by (namespace) (kube_pod_status_ready{namespace=~\\\
-    \"$env\\\", condition=\\\"true\\\", pod=~\\\"frontend.*\\\"})\",\n          \"\
-    legendFormat\": \"{{namespace}}\"\n        }\n      ]\n    },\n    {\n      \"\
-    id\": 3,\n      \"title\": \"Restarts Pods Frontend (1h)\",\n      \"type\": \"\
-    timeseries\",\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 8,\n  \
-    \      \"x\": 16,\n        \"y\": 0\n      },\n      \"fieldConfig\": {\n    \
-    \    \"defaults\": {\n          \"unit\": \"none\",\n          \"custom\": {\n\
-    \            \"lineWidth\": 2,\n            \"fillOpacity\": 10\n          }\n\
-    \        }\n      },\n      \"targets\": [\n        {\n          \"refId\": \"\
-    A\",\n          \"expr\": \"sum by (namespace, pod) (increase(kube_pod_container_status_restarts_total{namespace=~\\\
+    title\": \"Pods Frontend Ready\",\n      \"type\": \"stat\",\n      \"gridPos\"\
+    : {\n        \"h\": 5,\n        \"w\": 6,\n        \"x\": 0,\n        \"y\": 0\n\
+    \      },\n      \"options\": {\n        \"reduceOptions\": {\n          \"calcs\"\
+    : [\n            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n\
+    \          \"values\": false\n        },\n        \"orientation\": \"horizontal\"\
+    ,\n        \"textMode\": \"value_and_name\",\n        \"colorMode\": \"background\"\
+    ,\n        \"graphMode\": \"none\"\n      },\n      \"fieldConfig\": {\n     \
+    \   \"defaults\": {\n          \"thresholds\": {\n            \"mode\": \"absolute\"\
+    ,\n            \"steps\": [\n              {\n                \"color\": \"red\"\
+    ,\n                \"value\": null\n              },\n              {\n      \
+    \          \"color\": \"green\",\n                \"value\": 1\n             \
+    \ }\n            ]\n          }\n        }\n      },\n      \"targets\": [\n \
+    \       {\n          \"refId\": \"A\",\n          \"expr\": \"sum by (namespace)\
+    \ (kube_pod_status_ready{namespace=~\\\"$env\\\", condition=\\\"true\\\", pod=~\\\
+    \"frontend.*\\\"})\",\n          \"legendFormat\": \"{{namespace}}\"\n       \
+    \ }\n      ]\n    },\n    {\n      \"id\": 2,\n      \"title\": \"Restarts Frontend\
+    \ (1h)\",\n      \"type\": \"stat\",\n      \"gridPos\": {\n        \"h\": 5,\n\
+    \        \"w\": 6,\n        \"x\": 6,\n        \"y\": 0\n      },\n      \"options\"\
+    : {\n        \"reduceOptions\": {\n          \"calcs\": [\n            \"lastNotNull\"\
+    \n          ],\n          \"fields\": \"\",\n          \"values\": false\n   \
+    \     },\n        \"orientation\": \"horizontal\",\n        \"textMode\": \"value_and_name\"\
+    ,\n        \"colorMode\": \"value\"\n      },\n      \"fieldConfig\": {\n    \
+    \    \"defaults\": {\n          \"thresholds\": {\n            \"mode\": \"absolute\"\
+    ,\n            \"steps\": [\n              {\n                \"color\": \"green\"\
+    ,\n                \"value\": null\n              },\n              {\n      \
+    \          \"color\": \"yellow\",\n                \"value\": 1\n            \
+    \  },\n              {\n                \"color\": \"red\",\n                \"\
+    value\": 3\n              }\n            ]\n          }\n        }\n      },\n\
+    \      \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\"\
+    : \"sum by (namespace) (increase(kube_pod_container_status_restarts_total{namespace=~\\\
     \"$env\\\", pod=~\\\"frontend.*\\\"}[1h]))\",\n          \"legendFormat\": \"\
-    {{namespace}} / {{pod}}\"\n        }\n      ]\n    },\n    {\n      \"id\": 4,\n\
-    \      \"title\": \"CPU Pods Frontend (cores)\",\n      \"type\": \"timeseries\"\
-    ,\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\": 12,\n        \"x\"\
-    : 0,\n        \"y\": 5\n      },\n      \"fieldConfig\": {\n        \"defaults\"\
-    : {\n          \"unit\": \"short\",\n          \"custom\": {\n            \"lineWidth\"\
+    {{namespace}}\"\n        }\n      ]\n    },\n    {\n      \"id\": 3,\n      \"\
+    title\": \"Medidor CPU Frontend (mcores)\",\n      \"type\": \"gauge\",\n    \
+    \  \"gridPos\": {\n        \"h\": 5,\n        \"w\": 6,\n        \"x\": 12,\n\
+    \        \"y\": 0\n      },\n      \"options\": {\n        \"reduceOptions\":\
+    \ {\n          \"calcs\": [\n            \"lastNotNull\"\n          ],\n     \
+    \     \"fields\": \"\",\n          \"values\": false\n        },\n        \"showThresholdLabels\"\
+    : false,\n        \"showThresholdMarkers\": true\n      },\n      \"fieldConfig\"\
+    : {\n        \"defaults\": {\n          \"unit\": \"none\",\n          \"min\"\
+    : 0,\n          \"max\": 500,\n          \"thresholds\": {\n            \"mode\"\
+    : \"absolute\",\n            \"steps\": [\n              {\n                \"\
+    color\": \"green\",\n                \"value\": null\n              },\n     \
+    \         {\n                \"color\": \"yellow\",\n                \"value\"\
+    : 200\n              },\n              {\n                \"color\": \"red\",\n\
+    \                \"value\": 400\n              }\n            ]\n          }\n\
+    \        }\n      },\n      \"targets\": [\n        {\n          \"refId\": \"\
+    A\",\n          \"expr\": \"sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace=~\\\
+    \"$env\\\", pod=~\\\"frontend.*\\\", container!=\\\"\\\", container!=\\\"POD\\\
+    \"}[5m])) * 1000\",\n          \"legendFormat\": \"{{namespace}}\"\n        }\n\
+    \      ]\n    },\n    {\n      \"id\": 4,\n      \"title\": \"Medidor Memoria\
+    \ Frontend (MiB)\",\n      \"type\": \"gauge\",\n      \"gridPos\": {\n      \
+    \  \"h\": 5,\n        \"w\": 6,\n        \"x\": 18,\n        \"y\": 0\n      },\n\
+    \      \"options\": {\n        \"reduceOptions\": {\n          \"calcs\": [\n\
+    \            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n    \
+    \      \"values\": false\n        },\n        \"showThresholdLabels\": false,\n\
+    \        \"showThresholdMarkers\": true\n      },\n      \"fieldConfig\": {\n\
+    \        \"defaults\": {\n          \"unit\": \"decmbytes\",\n          \"min\"\
+    : 0,\n          \"max\": 1024,\n          \"thresholds\": {\n            \"mode\"\
+    : \"absolute\",\n            \"steps\": [\n              {\n                \"\
+    color\": \"green\",\n                \"value\": null\n              },\n     \
+    \         {\n                \"color\": \"yellow\",\n                \"value\"\
+    : 512\n              },\n              {\n                \"color\": \"red\",\n\
+    \                \"value\": 850\n              }\n            ]\n          }\n\
+    \        }\n      },\n      \"targets\": [\n        {\n          \"refId\": \"\
+    A\",\n          \"expr\": \"sum by (namespace) (container_memory_working_set_bytes{namespace=~\\\
+    \"$env\\\", pod=~\\\"frontend.*\\\", container!=\\\"\\\", container!=\\\"POD\\\
+    \"}) / 1024 / 1024\",\n          \"legendFormat\": \"{{namespace}}\"\n       \
+    \ }\n      ]\n    },\n    {\n      \"id\": 5,\n      \"title\": \"Distribucion\
+    \ Memoria por Entorno\",\n      \"type\": \"piechart\",\n      \"gridPos\": {\n\
+    \        \"h\": 7,\n        \"w\": 6,\n        \"x\": 0,\n        \"y\": 5\n \
+    \     },\n      \"options\": {\n        \"reduceOptions\": {\n          \"calcs\"\
+    : [\n            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n\
+    \          \"values\": false\n        },\n        \"pieType\": \"donut\",\n  \
+    \      \"legend\": {\n          \"displayMode\": \"list\",\n          \"placement\"\
+    : \"bottom\"\n        }\n      },\n      \"fieldConfig\": {\n        \"defaults\"\
+    : {\n          \"unit\": \"bytes\"\n        }\n      },\n      \"targets\": [\n\
+    \        {\n          \"refId\": \"A\",\n          \"expr\": \"sum by (namespace)\
+    \ (container_memory_working_set_bytes{namespace=~\\\"$env\\\", pod=~\\\"frontend.*\\\
+    \", container!=\\\"\\\", container!=\\\"POD\\\"})\",\n          \"legendFormat\"\
+    : \"{{namespace}}\"\n        }\n      ]\n    },\n    {\n      \"id\": 6,\n   \
+    \   \"title\": \"CPU Frontend (cores)\",\n      \"type\": \"timeseries\",\n  \
+    \    \"gridPos\": {\n        \"h\": 7,\n        \"w\": 9,\n        \"x\": 6,\n\
+    \        \"y\": 5\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n\
+    \          \"unit\": \"short\",\n          \"custom\": {\n            \"lineWidth\"\
     : 2,\n            \"fillOpacity\": 12\n          }\n        }\n      },\n    \
     \  \"targets\": [\n        {\n          \"refId\": \"A\",\n          \"expr\"\
     : \"sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~\\\
     \"$env\\\", pod=~\\\"frontend.*\\\", container!=\\\"\\\", container!=\\\"POD\\\
     \"}[5m]))\",\n          \"legendFormat\": \"{{namespace}} / {{pod}}\"\n      \
-    \  }\n      ]\n    },\n    {\n      \"id\": 5,\n      \"title\": \"Memoria Pods\
-    \ Frontend (bytes)\",\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n\
-    \        \"h\": 7,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 5\n\
+    \  }\n      ]\n    },\n    {\n      \"id\": 7,\n      \"title\": \"Memoria Frontend\
+    \ (bytes)\",\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n        \"\
+    h\": 7,\n        \"w\": 9,\n        \"x\": 15,\n        \"y\": 5\n      },\n \
+    \     \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"bytes\"\
+    ,\n          \"custom\": {\n            \"lineWidth\": 2,\n            \"fillOpacity\"\
+    : 12\n          }\n        }\n      },\n      \"targets\": [\n        {\n    \
+    \      \"refId\": \"A\",\n          \"expr\": \"sum by (namespace, pod) (container_memory_working_set_bytes{namespace=~\\\
+    \"$env\\\", pod=~\\\"frontend.*\\\", container!=\\\"\\\", container!=\\\"POD\\\
+    \"})\",\n          \"legendFormat\": \"{{namespace}} / {{pod}}\"\n        }\n\
+    \      ]\n    },\n    {\n      \"id\": 8,\n      \"title\": \"Latencia / Timings\
+    \ (Scrape & Eval)\",\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n\
+    \        \"h\": 7,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 12\n\
     \      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\"\
-    : \"bytes\",\n          \"custom\": {\n            \"lineWidth\": 2,\n       \
-    \     \"fillOpacity\": 12\n          }\n        }\n      },\n      \"targets\"\
-    : [\n        {\n          \"refId\": \"A\",\n          \"expr\": \"sum by (namespace,\
-    \ pod) (container_memory_working_set_bytes{namespace=~\\\"$env\\\", pod=~\\\"\
-    frontend.*\\\", container!=\\\"\\\", container!=\\\"POD\\\"})\",\n          \"\
-    legendFormat\": \"{{namespace}} / {{pod}}\"\n        }\n      ]\n    }\n  ]\n\
-    }\n"
+    : \"s\",\n          \"custom\": {\n            \"lineWidth\": 2,\n           \
+    \ \"fillOpacity\": 10\n          }\n        }\n      },\n      \"targets\": [\n\
+    \        {\n          \"refId\": \"A\",\n          \"expr\": \"scrape_duration_seconds{job=~\\\
+    \".*\\\"}\",\n          \"legendFormat\": \"scrape {{job}}\"\n        },\n   \
+    \     {\n          \"refId\": \"B\",\n          \"expr\": \"vmalert_iteration_duration_seconds\"\
+    ,\n          \"legendFormat\": \"vmalert eval\"\n        }\n      ]\n    },\n\
+    \    {\n      \"id\": 9,\n      \"title\": \"Consultas / Muestras Scrapeadas (rate/s)\"\
+    ,\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n        \"h\": 7,\n\
+    \        \"w\": 12,\n        \"x\": 12,\n        \"y\": 12\n      },\n      \"\
+    fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"ops\",\n    \
+    \      \"custom\": {\n            \"lineWidth\": 2,\n            \"fillOpacity\"\
+    : 10\n          }\n        }\n      },\n      \"targets\": [\n        {\n    \
+    \      \"refId\": \"A\",\n          \"expr\": \"sum(rate(vmagent_rem RW_samples_sent_total[5m]))\
+    \ or sum(rate(vm_promscrape_scraped_samples_total[5m])) or sum(rate(apiserver_request_total[5m]))\"\
+    ,\n          \"legendFormat\": \"rate consultas/muestras\"\n        }\n      ]\n\
+    \    }\n  ]\n}\n"
 kind: ConfigMap
 metadata:
   name: grafana-dashboards
