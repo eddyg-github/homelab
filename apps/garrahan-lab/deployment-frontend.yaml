@@ -19,7 +19,7 @@ spec:
         app: frontend
     spec:
       containers:
-        - image: ghcr.io/eddyg-github/planigrafo-frontend:2026-11-20-lab41
+        - image: ghcr.io/eddyg-github/planigrafo-frontend:2026-11-20-lab42
           imagePullPolicy: IfNotPresent
           name: frontend
           ports:
