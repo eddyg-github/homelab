@@ -1775,7 +1775,7 @@ data:
     \  \"90d\"\n  ]\n }\n}"
   planigrafo-uci-envs.json: "{\n  \"title\": \"Planígrafo UCI — garrahan-lab & garraham\"\
     ,\n  \"uid\": \"planigrafo-uci-envs\",\n  \"timezone\": \"browser\",\n  \"schemaVersion\"\
-    : 39,\n  \"version\": 3,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
+    : 39,\n  \"version\": 4,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
     tags\": [\n    \"planigrafo\",\n    \"garrahan\",\n    \"k3s\",\n    \"victoriametrics\"\
     \n  ],\n  \"templating\": {\n    \"list\": [\n      {\n        \"name\": \"env\"\
     ,\n        \"label\": \"Entorno\",\n        \"type\": \"query\",\n        \"query\"\
@@ -1854,7 +1854,7 @@ data:
     \"}) / 1024 / 1024\",\n          \"legendFormat\": \"{{namespace}}\"\n       \
     \ }\n      ]\n    },\n    {\n      \"id\": 5,\n      \"title\": \"Distribucion\
     \ Memoria por Entorno\",\n      \"type\": \"piechart\",\n      \"gridPos\": {\n\
-    \        \"h\": 7,\n        \"w\": 6,\n        \"x\": 0,\n        \"y\": 5\n \
+    \        \"h\": 8,\n        \"w\": 6,\n        \"x\": 0,\n        \"y\": 5\n \
     \     },\n      \"options\": {\n        \"reduceOptions\": {\n          \"calcs\"\
     : [\n            \"lastNotNull\"\n          ],\n          \"fields\": \"\",\n\
     \          \"values\": false\n        },\n        \"pieType\": \"donut\",\n  \
@@ -1866,7 +1866,7 @@ data:
     \", container!=\\\"\\\", container!=\\\"POD\\\"})\",\n          \"legendFormat\"\
     : \"{{namespace}}\"\n        }\n      ]\n    },\n    {\n      \"id\": 6,\n   \
     \   \"title\": \"CPU Frontend (cores)\",\n      \"type\": \"timeseries\",\n  \
-    \    \"gridPos\": {\n        \"h\": 7,\n        \"w\": 9,\n        \"x\": 6,\n\
+    \    \"gridPos\": {\n        \"h\": 8,\n        \"w\": 9,\n        \"x\": 6,\n\
     \        \"y\": 5\n      },\n      \"fieldConfig\": {\n        \"defaults\": {\n\
     \          \"unit\": \"short\",\n          \"custom\": {\n            \"lineWidth\"\
     : 2,\n            \"fillOpacity\": 12\n          }\n        }\n      },\n    \
@@ -1876,7 +1876,7 @@ data:
     \"}[5m]))\",\n          \"legendFormat\": \"{{namespace}} / {{pod}}\"\n      \
     \  }\n      ]\n    },\n    {\n      \"id\": 7,\n      \"title\": \"Memoria Frontend\
     \ (bytes)\",\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n        \"\
-    h\": 7,\n        \"w\": 9,\n        \"x\": 15,\n        \"y\": 5\n      },\n \
+    h\": 8,\n        \"w\": 9,\n        \"x\": 15,\n        \"y\": 5\n      },\n \
     \     \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"bytes\"\
     ,\n          \"custom\": {\n            \"lineWidth\": 2,\n            \"fillOpacity\"\
     : 12\n          }\n        }\n      },\n      \"targets\": [\n        {\n    \
@@ -1885,7 +1885,7 @@ data:
     \"})\",\n          \"legendFormat\": \"{{namespace}} / {{pod}}\"\n        }\n\
     \      ]\n    },\n    {\n      \"id\": 8,\n      \"title\": \"Latencia / Timings\
     \ (Scrape & Eval)\",\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n\
-    \        \"h\": 7,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 12\n\
+    \        \"h\": 8,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 13\n\
     \      },\n      \"fieldConfig\": {\n        \"defaults\": {\n          \"unit\"\
     : \"s\",\n          \"custom\": {\n            \"lineWidth\": 2,\n           \
     \ \"fillOpacity\": 10\n          }\n        }\n      },\n      \"targets\": [\n\
@@ -1894,8 +1894,8 @@ data:
     \     {\n          \"refId\": \"B\",\n          \"expr\": \"vmalert_iteration_duration_seconds\"\
     ,\n          \"legendFormat\": \"vmalert eval\"\n        }\n      ]\n    },\n\
     \    {\n      \"id\": 9,\n      \"title\": \"Consultas / Muestras Scrapeadas (rate/s)\"\
-    ,\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n        \"h\": 7,\n\
-    \        \"w\": 12,\n        \"x\": 12,\n        \"y\": 12\n      },\n      \"\
+    ,\n      \"type\": \"timeseries\",\n      \"gridPos\": {\n        \"h\": 8,\n\
+    \        \"w\": 12,\n        \"x\": 12,\n        \"y\": 13\n      },\n      \"\
     fieldConfig\": {\n        \"defaults\": {\n          \"unit\": \"ops\",\n    \
     \      \"custom\": {\n            \"lineWidth\": 2,\n            \"fillOpacity\"\
     : 10\n          }\n        }\n      },\n      \"targets\": [\n        {\n    \
