@@ -15,7 +15,7 @@ spec:
       labels:
         app: mysql-backup-holder
       annotations:
-        backup.velero.io/backup-volumes: backup
+        backup.velero.io/backup-volumes-excludes: backup
     spec:
       containers:
       - name: holder
