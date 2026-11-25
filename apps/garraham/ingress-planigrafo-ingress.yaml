@@ -10,7 +10,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-  - host: garraham.lyxar.dedyn.io
+  - host: planigrafo.lyxar.dedyn.io
     http:
       paths:
       - backend:
