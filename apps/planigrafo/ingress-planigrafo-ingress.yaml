@@ -6,7 +6,7 @@ metadata:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: 'true'
   name: planigrafo-ingress
-  namespace: garraham
+  namespace: planigrafo
 spec:
   ingressClassName: traefik
   rules:

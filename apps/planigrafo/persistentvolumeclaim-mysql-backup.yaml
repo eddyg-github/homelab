@@ -1,13 +1,15 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: mysql-data-v2
-  namespace: garraham
+  name: mysql-backup
+  namespace: planigrafo
+  annotations:
+    backup.velero.io/exclude-from-backup: "true"
 spec:
   accessModes:
   - ReadWriteOnce
   resources:
     requests:
-      storage: 5Gi
+      storage: 2Gi
   storageClassName: local-path
   volumeMode: Filesystem

@@ -4,7 +4,7 @@ metadata:
   labels:
     app: backend
   name: backend-service
-  namespace: garraham
+  namespace: planigrafo
 spec:
   ports:
   - name: http

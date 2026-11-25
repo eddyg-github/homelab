@@ -3,7 +3,7 @@
   "kind": "Middleware",
   "metadata": {
     "name": "redirect-https",
-    "namespace": "garraham"
+    "namespace": "planigrafo"
   },
   "spec": {
     "redirectScheme": {

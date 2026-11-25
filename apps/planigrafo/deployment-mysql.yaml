@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql
-  namespace: garraham
+  namespace: planigrafo
 spec:
   progressDeadlineSeconds: 600
   replicas: 1

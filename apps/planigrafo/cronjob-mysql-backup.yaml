@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: mysql-backup
-  namespace: garraham
+  namespace: planigrafo
 spec:
   concurrencyPolicy: Forbid
   failedJobsHistoryLimit: 2

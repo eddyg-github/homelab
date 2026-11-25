@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontend-service
-  namespace: garraham
+  namespace: planigrafo
 spec:
   ports:
   - port: 80

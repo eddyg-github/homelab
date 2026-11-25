@@ -2,9 +2,9 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: redirect-garrahan
-  namespace: garraham
+  namespace: planigrafo
 spec:
   redirectRegex:
-    regex: '^https?://garraham\.lyxar\.dedyn\.io/(.*)'
+    regex: '^https?://planigrafo\.lyxar\.dedyn\.io/(.*)'
     replacement: 'https://garrahan.lyxar.dedyn.io/${1}'
     permanent: true
