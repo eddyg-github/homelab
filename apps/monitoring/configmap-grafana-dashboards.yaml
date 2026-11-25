@@ -1568,8 +1568,8 @@ data:
     \     \"min\": 0,\n     \"decimals\": 1,\n     \"color\": {\n      \"mode\": \"\
     fixed\",\n      \"fixedColor\": \"#888888\"\n     },\n     \"custom\": {\n   \
     \   \"lineWidth\": 2,\n      \"fillOpacity\": 18,\n      \"gradientMode\": \"\
-    opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"showPoints\": \"\
-    auto\",\n      \"pointSize\": 5,\n      \"spanNulls\": true\n     }\n    },\n\
+    opacity\",\n      \"lineInterpolation\": \"linear\",\n      \"showPoints\": \"\
+    auto\",\n      \"pointSize\": 5,\n      \"spanNulls\": false\n     }\n    },\n\
     \    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\"\
     ,\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n   \
     \    {\n        \"id\": \"color\",\n        \"value\": {\n         \"mode\": \"\
@@ -1596,9 +1596,9 @@ data:
     \ \"Mbits\",\n     \"min\": 0,\n     \"decimals\": 1,\n     \"color\": {\n   \
     \   \"mode\": \"fixed\",\n      \"fixedColor\": \"#888888\"\n     },\n     \"\
     custom\": {\n      \"lineWidth\": 2,\n      \"fillOpacity\": 18,\n      \"gradientMode\"\
-    : \"opacity\",\n      \"lineInterpolation\": \"smooth\",\n      \"showPoints\"\
-    : \"auto\",\n      \"pointSize\": 5,\n      \"spanNulls\": true\n     }\n    },\n\
-    \    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\"\
+    : \"opacity\",\n      \"lineInterpolation\": \"linear\",\n      \"showPoints\"\
+    : \"auto\",\n      \"pointSize\": 5,\n      \"spanNulls\": false\n     }\n   \
+    \ },\n    \"overrides\": [\n     {\n      \"matcher\": {\n       \"id\": \"byName\"\
     ,\n       \"options\": \"Cloudflare\"\n      },\n      \"properties\": [\n   \
     \    {\n        \"id\": \"color\",\n        \"value\": {\n         \"mode\": \"\
     fixed\",\n         \"fixedColor\": \"#F6821F\"\n        }\n       }\n      ]\n\
