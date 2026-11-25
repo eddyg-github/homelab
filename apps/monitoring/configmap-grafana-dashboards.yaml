@@ -1475,27 +1475,27 @@ data:
     : 1,\n \"refresh\": \"1m\",\n \"graphTooltip\": 1,\n \"time\": {\n  \"from\":\
     \ \"now-24h\",\n  \"to\": \"now\"\n },\n \"annotations\": {\n  \"list\": []\n\
     \ },\n \"templating\": {\n  \"list\": [\n   {\n    \"name\": \"ventana\",\n  \
-    \  \"label\": \"Per\\u00edodo\",\n    \"type\": \"custom\",\n    \"query\": \"\
-    \\u00daltima hora : 1h,\\u00daltimas 6h : 6h,Diario (24h) : 1d,Semanal (7d) :\
-    \ 7d,Mensual (30d) : 30d,Trimestral (90d) : 90d,Rango del reloj : $__range\",\n\
-    \    \"current\": {\n     \"selected\": true,\n     \"text\": \"Diario (24h)\"\
-    ,\n     \"value\": \"1d\"\n    },\n    \"options\": [\n     {\n      \"selected\"\
-    : false,\n      \"text\": \"\\u00daltima hora\",\n      \"value\": \"1h\"\n  \
-    \   },\n     {\n      \"selected\": false,\n      \"text\": \"\\u00daltimas 6h\"\
-    ,\n      \"value\": \"6h\"\n     },\n     {\n      \"selected\": true,\n     \
-    \ \"text\": \"Diario (24h)\",\n      \"value\": \"1d\"\n     },\n     {\n    \
-    \  \"selected\": false,\n      \"text\": \"Semanal (7d)\",\n      \"value\": \"\
-    7d\"\n     },\n     {\n      \"selected\": false,\n      \"text\": \"Mensual (30d)\"\
-    ,\n      \"value\": \"30d\"\n     },\n     {\n      \"selected\": false,\n   \
-    \   \"text\": \"Trimestral (90d)\",\n      \"value\": \"90d\"\n     },\n     {\n\
-    \      \"selected\": false,\n      \"text\": \"Rango del reloj\",\n      \"value\"\
-    : \"$__range\"\n     }\n    ],\n    \"includeAll\": false,\n    \"multi\": false,\n\
-    \    \"hide\": 0\n   }\n  ]\n },\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\"\
-    : \"gauge\",\n   \"title\": \"Cloudflare - Bajada\",\n   \"datasource\": {\n \
-    \   \"type\": \"prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"\
-    gridPos\": {\n    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 7\n   },\n\
-    \   \"targets\": [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\"\
-    ,\n      \"uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg(avg_over_time(speedtest_download_mbps{provider=\\\
+    \  \"label\": \"Período\",\n    \"type\": \"custom\",\n    \"query\": \"Última\
+    \ hora : 1h,Últimas 6h : 6h,Diario (24h) : 1d,Semanal (7d) : 7d,Mensual (30d)\
+    \ : 30d,Trimestral (90d) : 90d,Rango del reloj : $__range\",\n    \"current\"\
+    : {\n     \"selected\": true,\n     \"text\": \"Diario (24h)\",\n     \"value\"\
+    : \"1d\"\n    },\n    \"options\": [\n     {\n      \"selected\": false,\n   \
+    \   \"text\": \"Última hora\",\n      \"value\": \"1h\"\n     },\n     {\n   \
+    \   \"selected\": false,\n      \"text\": \"Últimas 6h\",\n      \"value\": \"\
+    6h\"\n     },\n     {\n      \"selected\": true,\n      \"text\": \"Diario (24h)\"\
+    ,\n      \"value\": \"1d\"\n     },\n     {\n      \"selected\": false,\n    \
+    \  \"text\": \"Semanal (7d)\",\n      \"value\": \"7d\"\n     },\n     {\n   \
+    \   \"selected\": false,\n      \"text\": \"Mensual (30d)\",\n      \"value\"\
+    : \"30d\"\n     },\n     {\n      \"selected\": false,\n      \"text\": \"Trimestral\
+    \ (90d)\",\n      \"value\": \"90d\"\n     },\n     {\n      \"selected\": false,\n\
+    \      \"text\": \"Rango del reloj\",\n      \"value\": \"$__range\"\n     }\n\
+    \    ],\n    \"includeAll\": false,\n    \"multi\": false,\n    \"hide\": 0\n\
+    \   }\n  ]\n },\n \"panels\": [\n  {\n   \"id\": 1,\n   \"type\": \"gauge\",\n\
+    \   \"title\": \"Cloudflare - Bajada\",\n   \"datasource\": {\n    \"type\": \"\
+    prometheus\",\n    \"uid\": \"P4169E866C3094E38\"\n   },\n   \"gridPos\": {\n\
+    \    \"x\": 0,\n    \"y\": 0,\n    \"w\": 6,\n    \"h\": 7\n   },\n   \"targets\"\
+    : [\n    {\n     \"datasource\": {\n      \"type\": \"prometheus\",\n      \"\
+    uid\": \"P4169E866C3094E38\"\n     },\n     \"expr\": \"avg(avg_over_time(speedtest_download_mbps{provider=\\\
     \"cloudflare\\\"}[$ventana]))\",\n     \"legendFormat\": \"Cloudflare - Bajada\"\
     ,\n     \"instant\": true,\n     \"range\": false,\n     \"refId\": \"A\"\n  \
     \  }\n   ],\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Mbits\"\
@@ -1527,7 +1527,7 @@ data:
     : \"P4169E866C3094E38\"\n   },\n   \"gridPos\": {\n    \"x\": 12,\n    \"y\":\
     \ 0,\n    \"w\": 6,\n    \"h\": 7\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
     : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n \
-    \    },\n     \"expr\": \"avg(avg_over_time(speedtest_download_mbps{provider=\\\
+    \    },\n     \"expr\": \"avg(last_over_time(speedtest_download_mbps{provider=\\\
     \"personal\\\"}[$ventana]))\",\n     \"legendFormat\": \"Personal - Bajada\",\n\
     \     \"instant\": true,\n     \"range\": false,\n     \"refId\": \"A\"\n    }\n\
     \   ],\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Mbits\",\n\
@@ -1543,8 +1543,8 @@ data:
     : \"P4169E866C3094E38\"\n   },\n   \"gridPos\": {\n    \"x\": 18,\n    \"y\":\
     \ 0,\n    \"w\": 6,\n    \"h\": 7\n   },\n   \"targets\": [\n    {\n     \"datasource\"\
     : {\n      \"type\": \"prometheus\",\n      \"uid\": \"P4169E866C3094E38\"\n \
-    \    },\n     \"expr\": \"avg(avg_over_time(speedtest_upload_mbps{provider=\\\"\
-    personal\\\"}[$ventana]))\",\n     \"legendFormat\": \"Personal - Subida\",\n\
+    \    },\n     \"expr\": \"avg(last_over_time(speedtest_upload_mbps{provider=\\\
+    \"personal\\\"}[$ventana]))\",\n     \"legendFormat\": \"Personal - Subida\",\n\
     \     \"instant\": true,\n     \"range\": false,\n     \"refId\": \"A\"\n    }\n\
     \   ],\n   \"fieldConfig\": {\n    \"defaults\": {\n     \"unit\": \"Mbits\",\n\
     \     \"decimals\": 0,\n     \"min\": 0,\n     \"max\": 1000,\n     \"noValue\"\
