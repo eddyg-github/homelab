@@ -13,7 +13,7 @@ kind: Middleware
 metadata: {name: lan-only, namespace: localstack}
 spec:
   ipAllowList:
-    sourceRange: ["192.168.1.0/24", "100.64.0.0/10", "127.0.0.1/32", "10.8.0.0/24"]
+    sourceRange: ["192.168.1.0/24", "100.64.0.0/10", "127.0.0.1/32", "10.8.0.0/24", "181.81.127.149/32"]
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
