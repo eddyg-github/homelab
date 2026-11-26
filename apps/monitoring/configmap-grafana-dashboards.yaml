@@ -1773,15 +1773,15 @@ data:
     \   \"15m\",\n   \"30m\",\n   \"1h\"\n  ],\n  \"time_options\": [\n   \"1h\",\n\
     \   \"6h\",\n   \"12h\",\n   \"24h\",\n   \"2d\",\n   \"7d\",\n   \"30d\",\n \
     \  \"90d\"\n  ]\n }\n}"
-  planigrafo-uci-envs.json: "{\n  \"title\": \"Planígrafo UCI — garrahan-lab & garraham\"\
+  planigrafo-uci-envs.json: "{\n  \"title\": \"Planígrafo UCI — garrahan-lab & planigrafo\"\
     ,\n  \"uid\": \"planigrafo-uci-envs\",\n  \"timezone\": \"browser\",\n  \"schemaVersion\"\
     : 39,\n  \"version\": 4,\n  \"refresh\": \"30s\",\n  \"editable\": true,\n  \"\
     tags\": [\n    \"planigrafo\",\n    \"garrahan\",\n    \"k3s\",\n    \"victoriametrics\"\
     \n  ],\n  \"templating\": {\n    \"list\": [\n      {\n        \"name\": \"env\"\
     ,\n        \"label\": \"Entorno\",\n        \"type\": \"query\",\n        \"query\"\
-    : \"label_values(kube_pod_info{namespace=~\\\"garrahan-lab|garraham\\\"}, namespace)\"\
+    : \"label_values(kube_pod_info{namespace=~\\\"garrahan-lab|planigrafo\\\"}, namespace)\"\
     ,\n        \"multi\": true,\n        \"includeAll\": true,\n        \"allValue\"\
-    : \"garrahan-lab|garraham\",\n        \"current\": {\n          \"selected\":\
+    : \"garrahan-lab|planigrafo\",\n        \"current\": {\n          \"selected\":\
     \ true,\n          \"text\": [\n            \"All\"\n          ],\n          \"\
     value\": [\n            \"$__all\"\n          ]\n        },\n        \"refresh\"\
     : 1\n      }\n    ]\n  },\n  \"panels\": [\n    {\n      \"id\": 1,\n      \"\
