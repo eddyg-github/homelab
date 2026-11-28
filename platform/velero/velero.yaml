@@ -4364,21 +4364,6 @@ metadata:
 spec:
   schedule: 30 3 * * *
   template:
-    includedNamespaces:
-    - media
-    - minio
-    - monitoring
-    - default
-    - argocd
-    - cert-manager
-    - floci
-    - guacamole
-    - vaultwarden
-    - planigrafo
-    - nextcloud
-    - immich
-    - ai
-    - speedtest
     ttl: 168h0m0s
     storageLocation: default
     snapshotVolumes: false
